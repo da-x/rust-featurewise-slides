@@ -1,10 +1,11 @@
+
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+	<title>Rust Intro for C/C++ devs - Part 1, By Dan Aloni</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -15,16 +16,84 @@
 	</head>
 	<body>
 		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+		    <div class="slides">
+		    <section id="front-page">
+			<span style="font-size:250%">
+			    <p>Rust</p>
+			</span>
+			<span style="font-size:130%">
+			    <p>System Programming Language</p>
+			</span>
+			<div style="font-size:90%">
+			    <p><i>An introduction for C/C++ programmers</i></p>
 			</div>
+			<div style="font-size:60%">
+			    <p><i>Part 1 - Move Semantics and Pattern Matching</i></p>
+			</div>
+			<small><a href="http://aloni.org">Dan Aloni</a> |
+			    <a href="http://twitter.com/DanAloni">
+				<img src="img/icons8-twitter.svg" style="margin: 0px 0px; border: 0px; background: none" height="32" width="32"/>
+				@DanAloni
+			    </a>
+			</small>
+			<div style="font-size:60%">
+			    <p><i>December 2018, Rust TLV Meetup</i></p>
+			</div>
+		    </section>
+		    <section id="system-programming">
+			<h2>System Programming</h2>
+			<ul>
+			    <li class="fragment">Fine control over:</li>
+			    <ul>
+				<li class="fragment">Memory allocations and layout: means no forced garbage collector and object management</li>
+				<li class="fragment">Hardware access: threading and execution</li>
+			    </ul>
+			    <li class="fragment">Allow to control performance at any level</li>
+			    <li class="fragment">Allow the programmer control over generated machine code and flow</li>
+			    <li class="fragment">Let's program everything in assembly!</li>
+			    <li class="fragment"><span style="color:red">NOT...</span></li>
+			</ul>
+		    </section>
+		    <section data-external="challenges.html"></section>
+		    <section>
+			<h2>Languages</h2>
+			<ul>
+			    <li class="fragment">We need a staticly typed, compiled language</li>
+			    <li class="fragment">Go: Has basic types, very limited generics, and GC</li>
+			    <li class="fragment">Java: Has memory management, generics, and GC</li>
+			    <li class="fragment">C: Too basic for our needs</li>
+			    <li class="fragment">C++: It is well established, has many advantages, but carries a lot of design baggage to the detriment that people often revert back to C</li>
+			    <li class="fragment">Rust: Let's consider it then! But compare it with what we know</li>
+			</ul>
+		    </section>
+		    <section data-external="move-semantics.html"></section>
+		    <section data-external="pattern-matching.html"></section>
+		    <!-- <section data-external="guaranteed-memory-safety.html"></section> -->
+
+		    <!-- <div class="footer" id="footer" style="display:none"> -->
+			<!-- Dan Aloni | -->
+			<!-- <img src="img/icons8-twitter.svg" -->
+			<!-- style="margin: 0px 0px; border: 0px; background: none" height="16" width="16"/> @DanAloni -->
+		    <!-- </div> -->
+
+		    <section>
+			<h1>Questions?</h1>
+			<p>Thanks,</p>
+			<small><a href="http://aloni.org">Dan Aloni</a> |
+			    <a href="http://twitter.com/DanAloni">
+				<img src="img/icons8-twitter.svg" style="margin: 0px 0px; border: 0px; background: none" height="32" width="32"/>
+				@DanAloni
+			    </a>
+			</small>
+		    </section>
+		    </div>
 		</div>
 
 		<script src="dist/reveal.js"></script>
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/external/external.js"></script>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
