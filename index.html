@@ -1,49 +1,89 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+	<title>reveal.js</title>
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+	<!-- Printing and PDF exports -->
+	<script>
+	    var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+    </head>
+    <body>
+	<div class="reveal">
+	    <div class="slides">
+		<section>
+		    <span style="font-size:300%">
+			<p>Rust</p>
+		    </span>
+		    <span style="font-size:150%">
+			System Programming Language
+		    </span>
+		</section>
+		<section>
+		    <h2>System Programming</h2>
+		    <ul>
+			<li class="fragment">Fine control over:</li>
+			<ul>
+			    <li class="fragment">Memory allocations: means no forced garbage collector and object management</li>
+			    <li class="fragment">Hardware access: threading and execution</li>
+			</ul>
+			<li class="fragment">Allow to control performance at any level</li>
+			<li class="fragment">Allow the programmer control over generated machine code and flow</li>
+		    </ul>
+		</section>
+		<section>
+		    <h2>System Programming: Challenges</h2>
+		    <ul>
+			<li class="fragment">It allows everything</li>
+			<li class="fragment">How to prevent programming mistakes with all this fine control?</li>
+			<li class="fragment">How to maintain correctness while achieving performance?</li>
+		    </ul>
+		</section>
+		<section>
+		    <h2>Rust Features</h2>
+		    <ul>
+			<li class="fragment highlight-yellow">Pattern matching</li>
+			<li>Guaranteed memory safety</li>
+			<li>Move semantics</li>
+			<li>Type inference</li>
+			<li>Trait-based generics</li>
+			<li>Zero-cost abstractions</li>
+			<li>Threads without data races</li>
+			<li>Minimal runtime</li>
+			<li>Efficient C bindings</li>
+		    </ul>
+		</section>
+	    </div>
+	</div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
 
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
-	</body>
+	<script>
+	    // More info about config & dependencies:
+	    // - https://github.com/hakimel/reveal.js#configuration
+	    // - https://github.com/hakimel/reveal.js#dependencies
+	    Reveal.initialize({
+			      dependencies: [
+				  { src: 'plugin/markdown/marked.js' },
+				  { src: 'plugin/markdown/markdown.js' },
+				  { src: 'plugin/notes/notes.js', async: true },
+				  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+			      ]
+	    });
+	</script>
+    </body>
 </html>
