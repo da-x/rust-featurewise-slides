@@ -37,27 +37,41 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		    <ul>
 			<li class="fragment">Fine control over:</li>
 			<ul>
-			    <li class="fragment">Memory allocations: means no forced garbage collector and object management</li>
+			    <li class="fragment">Memory allocations and layout: means no forced garbage collector and object management</li>
 			    <li class="fragment">Hardware access: threading and execution</li>
 			</ul>
 			<li class="fragment">Allow to control performance at any level</li>
 			<li class="fragment">Allow the programmer control over generated machine code and flow</li>
+			<li class="fragment">Let's program everything in assembly!</li>
+			<li class="fragment"><span style="color:red">NOT...</span></li>
 		    </ul>
 		</section>
 		<section>
 		    <h2>System Programming: Challenges</h2>
 		    <ul>
-			<li class="fragment">It allows everything</li>
+			<li class="fragment">Because we want 'everything' - </li>
 			<li class="fragment">How to prevent programming mistakes with all this fine control?</li>
 			<li class="fragment">How to maintain correctness while achieving performance?</li>
+			<li class="fragment">Is there a holy grail of max correctness and max control?</li>
+		    </ul>
+		</section>
+		<section>
+		    <h2>Languages</h2>
+		    <ul>
+			<li class="fragment">We need a staticly typed, compiled language</li>
+			<li class="fragment">C: Has basic types, simple standard, hardly any correctness guarantees</li>
+			<li class="fragment">C++: Has generic types, very complex and problematic (next slides)</li>
+			<li class="fragment">Go: Has basic types and very simple generic types</li>
+			<li class="fragment">Java: Has memory management, GC, and generic types</li>
+			<li class="fragment">We want something better, best of all worlds</li>
 		    </ul>
 		</section>
 		<section>
 		    <h2>Rust Features</h2>
 		    <ul>
-			<li class="fragment highlight-yellow">Pattern matching</li>
-			<li>Guaranteed memory safety</li>
+			<li class="fragment highlight-yellow">Guaranteed memory safety</li>
 			<li>Move semantics</li>
+			<li>Pattern matching</li>
 			<li>Type inference</li>
 			<li>Trait-based generics</li>
 			<li>Zero-cost abstractions</li>
