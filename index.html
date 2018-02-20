@@ -69,9 +69,9 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		<section>
 		    <h2>Rust Features</h2>
 		    <ul>
-			<li class="fragment highlight-yellow">Guaranteed memory safety</li>
+			<li class="fragment highlight-yellow">Pattern matching</li>
+			<li>Guaranteed memory safety</li>
 			<li>Move semantics</li>
-			<li>Pattern matching</li>
 			<li>Type inference</li>
 			<li>Trait-based generics</li>
 			<li>Zero-cost abstractions</li>
@@ -79,6 +79,111 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 			<li>Minimal runtime</li>
 			<li>Efficient C bindings</li>
 		    </ul>
+		</section>
+		<section>
+		    <section>
+			<h2>Pattern Matching</h2>
+			<ul>
+			    <li class="fragment">Used for 'deconstruction', accessing fields of structs without repetitively naming them</li>
+			    <li class="fragment">And for accessing tagged unions <b>safely</b></li>
+			    <li class="fragment">Tagged unions == variant types == sum types</li>
+			</ul>
+		    </section>
+		    <section>
+			C: Tagged union definition
+			<pre><code class="hljs c" data-trim contenteditable>
+enum code {
+    CODE__OK,
+    CODE__ERR_WITH_VAL,
+    CODE__ERR_WITH_STR,
+};
+
+struct code_struct {
+    enum code tag;
+    union {
+	int val;
+	const char *str;
+    } u;
+};
+			</code></pre>
+		    </section>
+		    <section>
+			C: Tagged union access
+			<pre><code class="hljs c" data-trim contenteditable>
+void example(struct code_struct cs) {
+    switch (cs.tag) {
+    case CODE__OK:
+	printf("OK\n");
+	break;
+    case CODE__ERR_WITH_VAL:
+	printf("%d\n", cs.u.val);
+	break;
+    case CODE__ERR_WITH_STR:
+	printf("%s\n", cs.u.str);
+	break;
+    }
+}
+			</code></pre>
+		    </section>
+		    <section>
+			Rust: Same tagged union
+			<pre><code class="hljs rust" data-trim contenteditable>
+enum Code {
+    Ok,
+    ErrVal(u32),
+    ErrStr(String),
+}
+
+fn example(Code cs) {
+    match cs {
+	Code::Ok => println!("OK"),
+	Code::ErrVal(val) => println!("{}", val),
+	Code::ErrStr(val) => println!("{}", val),
+    }
+}
+			</code></pre>
+		    </section>
+		    <section>
+			Rust: Construction is also easier
+			<pre><code class="hljs rust" data-trim contenteditable>
+			Code::Ok
+			</code></pre>
+
+			<pre><code class="hljs rust" data-trim contenteditable>
+			Code::ErrVal(3)
+			</code></pre>
+
+			<pre><code class="hljs rust" data-trim contenteditable>
+			Code::ErrString(String::new("A"))
+			</code></pre>
+
+			NOTE: This `String` type is heap-allocated for simplicity of the example,
+			but we could have used a reference string type with usage-dependent
+			memory location.
+		    </section>
+		    <section>
+			Rust: Deconstruction can be more elaborate
+			<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+enum Shape {
+    Rect(u32, u32),
+    Cube(u32, u32, u32),
+}
+
+fn example(Shape cs) {
+    match cs {
+	Code::Rect(1, _) =>
+  	   println!("Rect with 1 as first dimension"),
+	Code::Rect(_, 1) =>
+	   println!("Rect with 1 as second dimension"),
+	Code::Rect(_, _) =>
+	   println!("All other boxes"),
+	Code::Cube(_, width, ) =>
+	   println!("I only care about Cube width={}", width),
+	_ => println!("all other possibilities"),
+    }
+}
+			</code></pre>
+		    </section>
 		</section>
 	    </div>
 	</div>
