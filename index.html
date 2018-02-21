@@ -82,9 +82,56 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</section>
 		<section>
 		    <section>
+			<h2>Struct Deconstruction</h2>
+			<p class="fragment">First, let's look at Struct Deconstruction</p>
+			<div class="fragment">If a function returns a tuple, Python lets you do:
+			    <pre><code class="hljs python" data-trim contenteditable>
+(a, b) = func()
+			    </code></pre>
+			</div>
+			<div class="fragment">Instead of:
+			    <pre><code class="hljs python" data-trim contenteditable>
+value = func()
+a = value[0]
+b = value[1]
+
+			    </code></pre>
+			</div>
+		    </section>
+		    <section>
+			<h2>Struct Deconstruction</h2>
+			<p class="fragment">Imagine the same thing with C.</p>
+			<div class="fragment">Now in Rust, suppose we have this struct:
+			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+struct Example {
+    some_int: u32,
+    some_string: String,
+}
+			</code></pre></div>
+			<div class="fragment">We can deconstruct it, assigning the names locally
+			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { some_int, some_string } = func()
+println!("{}", some_int);
+			</code></pre></div>
+		    </section>
+		    <section>
+			<h2>Struct Deconstruction</h2>
+			<div class="fragment">We don't have to use the same names
+			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { some_int: bla, some_string } = func()
+println!("{}", bla);
+			</code></pre></div>
+			<div class="fragment">Or get them all
+			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { .., some_string } = func()
+println!("{}", some_string);
+			</code></pre></div>
+		    </section>
+		    <section>
 			<h2>Pattern Matching</h2>
 			<ul>
-			    <li class="fragment">Used for 'deconstruction', accessing fields of structs without repetitively naming them</li>
+			    <li class="fragment">Used with struct deconstruction, like in Python</li>
+			    <li class="fragment">Accessing fields of structs without repetitively naming them</li>
 			    <li class="fragment">And for accessing tagged unions <b>safely</b></li>
 			    <li class="fragment">Tagged unions == variant types == sum types</li>
 			</ul>
