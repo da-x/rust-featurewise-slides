@@ -82,6 +82,9 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</section>
 		<section>
 		    <section>
+			<h2>Pattern Matching</h2>
+		    </section>
+		    <section>
 			<h2>Struct Deconstruction</h2>
 			<p class="fragment">First, let's look at Struct Deconstruction</p>
 			<div class="fragment">If a function returns a tuple, Python lets you do:
@@ -270,6 +273,9 @@ enum Option&lt;T&gt; {
 		</section>
 		<section>
 		    <section>
+			<h2>Move semantics</h2>
+		    </section>
+		    <section>
 			<h2>Move in C++</h2>
 			<ul>
 			    <li class="fragment">
@@ -402,14 +408,80 @@ v = std::move(v); // undefined behavior
 			</code></pre></div>
 			<ul>
 			    <li class="fragment">
-				In C++ it means: call special or implicit copy assignment operator of 'a', copying b. Was 'b' modified in this
+				What does it mean? In either language? In C it is simple.
+			    </li>
+			    <li class="fragment">
+				In C++ it means: call a special or implicit copy assignment operator of pre-existing value "a", copying resources from "b". Was "b" modified in this
 				operation? Depending on <i>which</i> copy assigment operator was called.
 			    </li>
 			    <li class="fragment">
-				In Rust it means: Drop 'a' and then move 'b' into 'a'. We know exactly what happened.
+				In Rust it means: Drop pre-existing "a" value and then move the content "b" into the place of "a". "b" no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
 			    </li>
 			</ul>
 		    </section>
+		    <section>
+			<div><pre><code class="hljs rust" data-trim contenteditable>
+			    a = b; // Drop "a" and move "b" into "a"
+			</code></pre></div>
+			<ul>
+			    <li>Wait, what? In Rust you... what?</li>
+			    <li class="fragment">
+				Seems bizzare that we cannot access "b" after this?
+			    </li>
+			    <li class="fragment">
+				Makes sense. Think of the case in C where the copied type contains pointers. Now if we do stuff with "a" we need to assure that the pointers in "b" are still valid.
+			    </li>
+	  	  	    <li class="fragment">
+				There is a very common case in which the type of "a" and "b" is <i>Copyable</i>, such as with type "u32", or types that the developer specifically intends to be that way. In these cases "b" remains accessible, and bit-identical to "a", just like in 'C'.
+			    </li>
+			</ul>
+		    </section>
+		    <section>
+			<ul>
+			    <li>Anyway, we have very simple rules as to what happens in assignments.</li>
+			    <li class="fragment">What about parameter passing?</li>
+			</ul>
+<div class="fragment"><pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+fn func_b(SomeType a) {
+    println!("{}", a);
+}
+
+fn func_a(SomeType a) {
+    func_b(a)
+}
+
+fn example() {
+    func_a(SomeType::new());
+}
+</div></code></pre>
+			<ul>
+			    <li class="fragment">Only one construction and one drop of SomeType happens here.</li>
+			</ul>
+		    </section>
+		    <section>
+			<ul>
+			    <li>But what about stack space in this example? And time it takes to memmove()?</li>
+			    <li class="fragment">Very good point. Don't panic.</li>
+			    <li class="fragment">We can pass references instead of moving stuff up and down, in and out of structs.</li>
+			    <li class="fragment">So, as it turns out, we have pointers to const data and mutable data just like in C/C++.</li>
+			    <li class="fragment">After wall, Rust is a system programming language.</li>
+			    <li class="fragment">And here it may get complicated. <span class="fragment">But unlike C++, in a good way!</span></li>
+			</ul>
+		    </section>
+		</section>
+		<section>
+		    <h2>Rust Features</h2>
+		    <ul>
+			<li>Pattern matching</li>
+			<li>Move semantics</li>
+			<li class="fragment highlight-yellow">Guaranteed memory safety</li>
+			<li>Type inference</li>
+			<li>Trait-based generics</li>
+			<li>Zero-cost abstractions</li>
+			<li>Threads without data races</li>
+			<li>Minimal runtime</li>
+			<li>Efficient C bindings</li>
+		    </ul>
 		</section>
 	    </div>
 	</div>
