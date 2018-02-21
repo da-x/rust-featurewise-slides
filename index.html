@@ -178,9 +178,18 @@ fn example(Shape cs) {
 	Code::Rect(_, _) =>
 	   println!("All other boxes"),
 	Code::Cube(_, width, ) =>
-	   println!("I only care about Cube width={}", width),
+	   println!("I only care about Cube width", width),
 	_ => println!("all other possibilities"),
     }
+}
+			</code></pre>
+		    </section>
+		    <section>
+			Rust: Option - A very useful type
+			<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+enum Option&lt;T&gt; {
+    None,
+    Some(T),
 }
 			</code></pre>
 		    </section>
