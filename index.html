@@ -99,8 +99,7 @@ b = value[1]
 			</div>
 		    </section>
 		    <section>
-			<h2>Struct Deconstruction</h2>
-			<p class="fragment">Imagine the same thing with C.</p>
+			Imagine the same thing with C.
 			<div class="fragment">Now in Rust, suppose we have this struct:
 			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
 struct Example {
@@ -115,8 +114,7 @@ println!("{}", some_int);
 			</code></pre></div>
 		    </section>
 		    <section>
-			<h2>Struct Deconstruction</h2>
-			<div class="fragment">We don't have to use the same names
+			<div>We don't have to use the same names
 			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
 let Example { some_int: bla, some_string } = func()
 println!("{}", bla);
@@ -128,11 +126,23 @@ println!("{}", some_string);
 			</code></pre></div>
 		    </section>
 		    <section>
+			Combine deconstruction with equality to literals:
+			<pre><code class="hljs rust" data-trim contenteditable>
+match test() {
+    Example { some_int: 3, some_string } =>
+        println!("Int was three, string was {}",
+                 some_string),
+    Example { .., some_string } =>
+        println!("Int was anything else, string was {}",
+                 some_string),
+}
+			</code></pre>
+			<span class="fragment">Like an advanced form of C's 'switch', right?</span>
+		    </section>
+		    <section>
 			<h2>Pattern Matching</h2>
 			<ul>
-			    <li class="fragment">Used with struct deconstruction, like in Python</li>
-			    <li class="fragment">Accessing fields of structs without repetitively naming them</li>
-			    <li class="fragment">And for accessing tagged unions <b>safely</b></li>
+			    <li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
 			    <li class="fragment">Tagged unions == variant types == sum types</li>
 			</ul>
 		    </section>
@@ -191,7 +201,10 @@ fn example(Code cs) {
 			</code></pre>
 		    </section>
 		    <section>
-			Rust: Construction is also easier
+			If 'match' not exhausive we get a compilation error.
+		    </section>
+		    <section>
+			In Rust, construction is also easier
 			<pre><code class="hljs rust" data-trim contenteditable>
 			Code::Ok
 			</code></pre>
@@ -204,9 +217,9 @@ fn example(Code cs) {
 			Code::ErrString(String::new("A"))
 			</code></pre>
 
-			NOTE: This `String` type is heap-allocated for simplicity of the example,
-			but we could have used a reference string type with usage-dependent
-			memory location.
+			<div class="fragment">NOTE: The content of this `String` type is heap-allocated
+			for simplicity of the example, but we could have used a reference string
+			type with usage-dependent memory location.</div>
 		    </section>
 		    <section>
 			Rust: Deconstruction can be more elaborate
@@ -224,8 +237,8 @@ fn example(Shape cs) {
 	   println!("Rect with 1 as second dimension"),
 	Code::Rect(_, _) =>
 	   println!("All other boxes"),
-	Code::Cube(_, width, ) =>
-	   println!("I only care about Cube width", width),
+	Code::Cube(width, _, 10) =>
+	   println!("Only certain Cube's width {}", width),
 	_ => println!("all other possibilities"),
     }
 }
