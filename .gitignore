@@ -2,6 +2,7 @@
 *.iml
 *.iws
 *.eml
+index,html
 index.html.old
 out/
 .DS_Store

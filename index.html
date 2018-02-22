@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html>
     <head>
@@ -24,134 +25,141 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
     <body>
 	<div class="reveal">
 	    <div class="slides">
-		<section>
-		    <span style="font-size:300%">
-			<p>Rust</p>
-		    </span>
-		    <span style="font-size:150%">
-			System Programming Language
-		    </span>
-		</section>
-		<section>
-		    <h2>System Programming</h2>
-		    <ul>
-			<li class="fragment">Fine control over:</li>
-			<ul>
-			    <li class="fragment">Memory allocations and layout: means no forced garbage collector and object management</li>
-			    <li class="fragment">Hardware access: threading and execution</li>
-			</ul>
-			<li class="fragment">Allow to control performance at any level</li>
-			<li class="fragment">Allow the programmer control over generated machine code and flow</li>
-			<li class="fragment">Let's program everything in assembly!</li>
-			<li class="fragment"><span style="color:red">NOT...</span></li>
-		    </ul>
-		</section>
-		<section>
-		    <h2>System Programming: Challenges</h2>
-		    <ul>
-			<li class="fragment">Because we want 'everything' - </li>
-			<li class="fragment">How to prevent programming mistakes with all this fine control?</li>
-			<li class="fragment">How to maintain correctness while achieving performance?</li>
-			<li class="fragment">Is there a holy grail of max correctness and max control?</li>
-		    </ul>
-		</section>
-		<section>
-		    <h2>Languages</h2>
-		    <ul>
-			<li class="fragment">We need a staticly typed, compiled language</li>
-			<li class="fragment">C: Has basic types, simple standard, hardly any correctness guarantees</li>
-			<li class="fragment">C++: Has generic types, very complex and problematic</li>
-			<li class="fragment">Go: Has basic types, very limited generics, and GC</li>
-			<li class="fragment">Java: Has memory management, generics, and GC</li>
-			<li class="fragment">We want something better, best of all worlds if possible</li>
-		    </ul>
-		</section>
-		<section>
-		    <section>
-			<h2>Rust Features</h2>
-			<ul>
-			    <li class="fragment highlight-yellow">Pattern matching</li>
-			    <li>Move semantics</li>
-			    <li>Guaranteed memory safety</li>
-			    <li>Type inference</li>
-			    <li>Trait-based generics</li>
-			    <li>Zero-cost abstractions</li>
-			    <li>Threads without data races</li>
-			    <li>Minimal runtime</li>
-			    <li>Efficient C bindings</li>
-			</ul>
-		    </section>
-		    <section>
-			<h2>Pattern Matching</h2>
-		    </section>
-		    <section>
-			<h3>Struct Deconstruction</h3>
-			<p class="fragment">First, let's look at Struct Deconstruction</p>
-			<div class="fragment">If a function returns a tuple, Python lets you do:
-			    <pre><code class="hljs python" data-trim contenteditable>
+<section><span style="font-size:300%">
+  <p>Rust
+  </p></span><span style="font-size:150%">
+	System Programming Language
+    </span></section>
+<section>
+ <h2>System Programming
+ </h2>
+ <ul>
+  <li class="fragment">Fine control over:</li>
+  
+  <ul>
+   <li class="fragment">Memory allocations and layout: means no forced garbage collector and object management</li>
+   <li class="fragment">Hardware access: threading and execution</li>
+  </ul>
+  <li class="fragment">Allow to control performance at any level</li>
+  <li class="fragment">Allow the programmer control over generated machine code and flow</li>
+  <li class="fragment">Let's program everything in assembly!</li>
+  <li class="fragment"><span style="color:red">NOT...</span></li>
+ </ul></section>
+<section>
+ <h2>System Programming: Challenges
+ </h2>
+ <ul>
+  <li class="fragment">Because we want 'everything' - </li>
+  <li class="fragment">How to prevent programming mistakes with all this fine control?</li>
+  <li class="fragment">How to maintain correctness while achieving performance?</li>
+  <li class="fragment">Is there a holy grail of max correctness and max control?</li>
+ </ul></section>
+<section>
+ <h2>Languages
+ </h2>
+ <ul>
+  <li class="fragment">We need a staticly typed, compiled language</li>
+  <li class="fragment">C: Has basic types, simple standard, hardly any correctness guarantees</li>
+  <li class="fragment">C++: Has generic types, very complex and problematic</li>
+  <li class="fragment">Go: Has basic types, very limited generics, and GC</li>
+  <li class="fragment">Java: Has memory management, generics, and GC</li>
+  <li class="fragment">We want something better, best of all worlds if possible</li>
+ </ul></section>
+<section><section>
+  <h2>Rust Features
+  </h2>
+  <ul>
+   <li class="fragment highlight-yellow">Pattern matching</li>
+   <li>Move semantics</li>
+   <li>Guaranteed memory safety</li>
+   <li>Type inference</li>
+   <li>Trait-based generics</li>
+   <li>Zero-cost abstractions</li>
+   <li>Threads without data races</li>
+   <li>Minimal runtime</li>
+   <li>Efficient C bindings</li>
+  </ul></section><section>
+  <h2>Pattern Matching
+  </h2></section><section>
+  <h3>Struct Deconstruction
+  </h3>
+  <p class="fragment">First, let's look at Struct Deconstruction
+  </p>
+  <div class="fragment">If a function returns a tuple, Python lets you do:
+	    
+   <pre><code class="hljs python" contenteditable="True" data-trim="True">
 (a, b) = func()
-			    </code></pre>
-			</div>
-			<div class="fragment">Instead of:
-			    <pre><code class="hljs python" data-trim contenteditable>
+	    </code>
+   </pre>
+  </div>
+  <div class="fragment">Instead of:
+	    
+   <pre><code class="hljs python" contenteditable="True" data-trim="True">
 value = func()
 a = value[0]
 b = value[1]
 
-			    </code></pre>
-			</div>
-		    </section>
-		    <section>
-			Imagine the same thing with C.
-			<div class="fragment">Now in Rust, suppose we have this struct:
-			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+	    </code>
+   </pre>
+  </div></section><section>
+	Imagine the same thing with C.
+	
+  <div class="fragment">Now in Rust, suppose we have this struct:
+	    
+   <pre class="fragment"><code class="hljs rust" contenteditable="True" data-trim="True">
 struct Example {
     some_int: u32,
     some_string: String,
 }
-			</code></pre></div>
-			<div class="fragment">We can deconstruct it, assigning the names locally
-			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+	</code>
+   </pre>
+  </div>
+  <div class="fragment">We can deconstruct it, assigning the names locally
+	    
+   <pre class="fragment"><code class="hljs rust" contenteditable="True" data-trim="True">
 let Example { some_int, some_string } = func();
-println!("{}", some_int);
-			</code></pre></div>
-		    </section>
-		    <section>
-			<div>We don't have to use the same names
-			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+println!(&quot;{}&quot;, some_int);
+	</code>
+   </pre>
+  </div></section><section>
+  <div>We don't have to use the same names
+	    
+   <pre class="fragment"><code class="hljs rust" contenteditable="True" data-trim="True">
 let Example { some_int: bla, some_string } = func();
-println!("{}", bla);
-			</code></pre></div>
-			<div class="fragment">Or get them all
-			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+println!(&quot;{}&quot;, bla);
+	</code>
+   </pre>
+  </div>
+  <div class="fragment">Or get them all
+	    
+   <pre class="fragment"><code class="hljs rust" contenteditable="True" data-trim="True">
 let Example { .., some_string } = func();
-println!("{}", some_string);
-			</code></pre></div>
-		    </section>
-		    <section>
-			Combine deconstruction with equality to literals:
-			<pre><code class="hljs rust" data-trim contenteditable>
+println!(&quot;{}&quot;, some_string);
+	</code>
+   </pre>
+  </div></section><section>
+	Combine deconstruction with equality to literals:
+	
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True">
 match test() {
-    Example { some_int: 3, some_string } =>
-        println!("Int was three, string was {}",
-                 some_string),
-    Example { .., some_string } =>
-        println!("Int was anything else, string was {}",
-                 some_string),
+    Example { some_int: 3, some_string } =&gt;
+	println!(&quot;Int was three, string was {}&quot;,
+		 some_string),
+    Example { .., some_string } =&gt;
+	println!(&quot;Int was anything else, string was {}&quot;,
+		 some_string),
 }
-			</code></pre>
-			<span class="fragment">Like an advanced form of C's 'switch', right?</span>
-		    </section>
-		    <section>
-			<h2>Pattern Matching</h2>
-			<ul>
-			    <li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
-			    <li class="fragment">Tagged unions == variant types == sum types</li>
-			</ul>
-		    </section>
-		    <section>
-			C: Tagged union definition
-			<pre><code class="hljs c" data-trim contenteditable>
+	</code>
+  </pre><span class="fragment">Like an advanced form of C's 'switch', right?</span></section><section>
+  <h2>Pattern Matching
+  </h2>
+  <ul>
+   <li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
+   <li class="fragment">Tagged unions == variant types == sum types</li>
+  </ul></section><section>
+	C: Tagged union definition
+	
+  <pre><code class="hljs c" contenteditable="True" data-trim="True">
 enum code {
     CODE__OK,
     CODE__ERR_WITH_VAL,
@@ -165,29 +173,29 @@ struct code_struct {
 	const char *str;
     } u;
 };
-			</code></pre>
-		    </section>
-		    <section>
-			C: Tagged union access
-			<pre><code class="hljs c" data-trim contenteditable>
+	</code>
+  </pre></section><section>
+	C: Tagged union access
+	
+  <pre><code class="hljs c" contenteditable="True" data-trim="True">
 void example(struct code_struct cs) {
     switch (cs.tag) {
     case CODE__OK:
-	printf("OK\n");
+	printf(&quot;OK\n&quot;);
 	break;
     case CODE__ERR_WITH_VAL:
-	printf("%d\n", cs.u.val);
+	printf(&quot;%d\n&quot;, cs.u.val);
 	break;
     case CODE__ERR_WITH_STR:
-	printf("%s\n", cs.u.str);
+	printf(&quot;%s\n&quot;, cs.u.str);
 	break;
     }
 }
-			</code></pre>
-		    </section>
-		    <section>
-			Rust: Same tagged union
-			<pre><code class="hljs rust" data-trim contenteditable>
+	</code>
+  </pre></section><section>
+	Rust: Same tagged union
+	
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True">
 enum Code {
     Ok,
     ErrVal(u32),
@@ -196,37 +204,36 @@ enum Code {
 
 fn example(Code cs) {
     match cs {
-	Code::Ok => println!("OK"),
-	Code::ErrVal(val) => println!("{}", val),
-	Code::ErrStr(val) => println!("{}", val),
+	Code::Ok =&gt; println!(&quot;OK&quot;),
+	Code::ErrVal(val) =&gt; println!(&quot;{}&quot;, val),
+	Code::ErrStr(val) =&gt; println!(&quot;{}&quot;, val),
     }
 }
-			</code></pre>
-		    </section>
-		    <section>
-			If 'match' not exhausive we get a compilation error.
-		    </section>
-		    <section>
-			In Rust, construction is also easier
-			<pre><code class="hljs rust" data-trim contenteditable>
+	</code>
+  </pre></section><section>
+	If 'match' not exhausive we get a compilation error.
+    </section><section>
+	In Rust, construction is also easier
+	
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True">
 			Code::Ok
-			</code></pre>
-
-			<pre><code class="hljs rust" data-trim contenteditable>
+	</code>
+  </pre>
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True">
 			Code::ErrVal(3)
-			</code></pre>
-
-			<pre><code class="hljs rust" data-trim contenteditable>
-			Code::ErrString(String::new("A"))
-			</code></pre>
-
-			<div class="fragment">NOTE: The content of this `String` type is heap-allocated
-			for simplicity of the example, but we could have used a reference string
-			type with usage-dependent memory location.</div>
-		    </section>
-		    <section>
-			Rust: Deconstruction can be more elaborate
-			<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+	</code>
+  </pre>
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True">
+			Code::ErrString(String::new(&quot;A&quot;))
+	</code>
+  </pre>
+  <div class="fragment">NOTE: The content of this `String` type is heap-allocated
+	    for simplicity of the example, but we could have used a reference string
+	    type with usage-dependent memory location.
+  </div></section><section>
+	Rust: Deconstruction can be more elaborate
+	
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True" style="font-height:50%">
 enum Shape {
     Rect(u32, u32),
     Cube(u32, u32, u32),
@@ -234,222 +241,221 @@ enum Shape {
 
 fn example(Shape cs) {
     match cs {
-	Code::Rect(1, _) =>
-  	   println!("Rect with 1 as first dimension"),
-	Code::Rect(_, 1) =>
-	   println!("Rect with 1 as second dimension"),
-	Code::Rect(_, _) =>
-	   println!("All other boxes"),
-	Code::Cube(width, _, 10) =>
-	   println!("Only certain Cube's width {}", width),
-	_ => println!("all other possibilities"),
+	Code::Rect(1, _) =&gt;
+	   println!(&quot;Rect with 1 as first dimension&quot;),
+	Code::Rect(_, 1) =&gt;
+	   println!(&quot;Rect with 1 as second dimension&quot;),
+	Code::Rect(_, _) =&gt;
+	   println!(&quot;All other boxes&quot;),
+	Code::Cube(width, _, 10) =&gt;
+	   println!(&quot;Only certain Cube's width {}&quot;, width),
+	_ =&gt; println!(&quot;all other possibilities&quot;),
     }
 }
-			</code></pre>
-		    </section>
-		    <section>
-			Rust: Option - A very useful type
-			<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+	</code>
+  </pre></section><section>
+	Rust: Option - A very useful type
+	
+  <pre><code class="hljs rust" contenteditable="True" data-trim="True" style="font-height:50%">
 enum Option&lt;T&gt; {
     None,
     Some(T),
 }
-			</code></pre>
-		    </section>
-		</section>
-		<section>
-		    <section>
-			<h2>Rust Features</h2>
-			<ul>
-			    <li>Pattern matching</li>
-			    <li class="fragment highlight-yellow">Move semantics</li>
-			    <li>Guaranteed memory safety</li>
-			    <li>Type inference</li>
-			    <li>Trait-based generics</li>
-			    <li>Zero-cost abstractions</li>
-			    <li>Threads without data races</li>
-			    <li>Minimal runtime</li>
-			    <li>Efficient C bindings</li>
-			</ul>
-		    </section>
-		    <section>
-			<h2>Move semantics</h2>
-		    </section>
-		    <section>
-			<h3>Move in C++</h3>
-			<ul>
-			    <li class="fragment">
-				Remember 'Constructors' and 'Destructors' in C++?
-			    </li>
-			    <li class="fragment">
-				Yikes...
-			    </li>
-			    <li class="fragment">
-				In C++, eventually it was realized that there are too many object constructions, copies, destructions.
-			    </li>
-			    <li class="fragment">
-				And they are right, it's bad.
-			    </li>
-			    <li class="fragment">
-				By moving the innards of a class to a new memory location, we don't do unnecessary work.
-			    </li>
-			    <li class="fragment">
-				So to rectify, there is a special C++ move constructor, since C++11.
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<div>In C++, 'move constructor' and 'move assigment' look like this:
-			    <pre class="fragment"><code class="hljs c++" data-trim contenteditable>
+	</code>
+  </pre></section></section>
+<section><section>
+  <h2>Rust Features
+  </h2>
+  <ul>
+   <li>Pattern matching</li>
+   <li class="fragment highlight-yellow">Move semantics</li>
+   <li>Guaranteed memory safety</li>
+   <li>Type inference</li>
+   <li>Trait-based generics</li>
+   <li>Zero-cost abstractions</li>
+   <li>Threads without data races</li>
+   <li>Minimal runtime</li>
+   <li>Efficient C bindings</li>
+  </ul></section><section>
+  <h2>Move semantics
+  </h2></section><section>
+  <h3>Move in C++
+  </h3>
+  <ul>
+   <li class="fragment">
+		Remember 'Constructors' and 'Destructors' in C++?
+	    </li>
+   <li class="fragment">
+		Yikes...
+	    </li>
+   <li class="fragment">
+		In C++, eventually it was realized that there are too many object constructions, copies, destructions.
+	    </li>
+   <li class="fragment">
+		And they are right, it's bad.
+	    </li>
+   <li class="fragment">
+		By moving the innards of a class to a new memory location, we don't do unnecessary work.
+	    </li>
+   <li class="fragment">
+		So to rectify, there is a special C++ move constructor, since C++11.
+	    </li>
+  </ul></section><section>
+  <div>In C++, 'move constructor' and 'move assigment' look like this:
+	    
+   <pre class="fragment"><code class="hljs c++" contenteditable="True" data-trim="True">
 // Simple move constructor
-A(A&& arg) : member(std::move(arg.member))
+A(A&amp;&amp; arg) : member(std::move(arg.member))
 {}
 
 // Simple move assignment operator
-A& operator=(A&& other) {
+A&amp; operator=(A&amp;&amp; other) {
      member = std::move(other.member);
      return *this;
 }
-			</code></pre></div>
-		    </section>
-		    <section>
-			<div>Example program
-			    <pre class="fragment"><code class="hljs c++" data-trim contenteditable>
+	</code>
+   </pre>
+  </div></section><section>
+  <div>Example program
+	    
+   <pre class="fragment"><code class="hljs c++" contenteditable="True" data-trim="True">
 int main()
 {
-    std::string str = "Hello";
+    std::string str = &quot;Hello&quot;;
     std::vector&lt;std::string&gt; v;
 
     v.push_back(str);
-    std::cout << "After copy, str is \"" << str << "\"\n";
+    std::cout &lt;&lt; &quot;After copy, str is \&quot;&quot; &lt;&lt; str &lt;&lt; &quot;\&quot;\n&quot;;
 
-    v.push_back(std::move(str));
-    std::cout << "After move, str is \"" << str << "\"\n";
+				 v.push_back(std::move(str));
+				 std::cout &lt;&lt; &quot;After move, str is \&quot;&quot; &lt;&lt; str &lt;&lt; &quot;\&quot;\n&quot;;
 
-    std::cout << "The contents of the vector are \"" << v[0]
-              << "\", \"" << v[1] << "\"\n";
-}
-			</code></pre></div>
-			<div class="fragment">'Moved from' location should remain valid
-			    after move because it is deconstructed later.</div>
-		    </section>
-		    <section>
-			<div>Output
-			    <pre><code class="hljs c++" data-trim contenteditable>
-After copy, str is "Hello"
-After move, str is ""
-The contents of the vector are "Hello", "Hello"
-			</code></pre></div>
-		    </section>
-		    <section>
-			<div>BTW, you should be careful with move, because:
-			    <pre><code class="hljs c++" data-trim contenteditable>
+				 std::cout &lt;&lt; &quot;The contents of the vector are \&quot;&quot; &lt;&lt; v[0]
+	      &lt;&lt; &quot;\&quot;, \&quot;&quot; &lt;&lt; v[1] &lt;&lt; &quot;\&quot;\n&quot;;
+				 }
+	</code>
+   </pre>
+  </div>
+  <div class="fragment">'Moved from' location should remain valid
+	    after move because it is deconstructed later.
+  </div></section><section>
+  <div>Output
+	    
+   <pre><code class="hljs c++" contenteditable="True" data-trim="True">
+After copy, str is &quot;Hello&quot;
+After move, str is &quot;&quot;
+The contents of the vector are &quot;Hello&quot;, &quot;Hello&quot;
+	</code>
+   </pre>
+  </div></section><section>
+  <div>BTW, you should be careful with move, because:
+	    
+   <pre><code class="hljs c++" contenteditable="True" data-trim="True">
 std::vector&lt;int&gt; v = {2, 3, 3};
 v = std::move(v); // undefined behavior
-			</code></pre></div>
-			<ul>
-			    <li class="fragment">Feels like using 'move' is for the real experts.</li>
-			    <li class="fragment">Otherwise you risk segfaults.</li>
-			    <li class="fragment">"Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from"</li>
-			</ul>
-		    </section>
-		    <section>
-			<ul>
-			    <li>
-				C++: We haven't even mentioned: error handling in constructors, exceptions from virtual destructors.
-			    </li>
-			    <li class="fragment">
-				Perhaps 'default/copy/move constructors' and 'assignment constructors' were wrong to being with.
-			    </li>
-			    <li class="fragment">
-				Coupling allocation (stack or heap) with initialization and construction was clearly a poor design choice.
-			    </li>
-			    <li class="fragment">
-				Same with coupling de-allocation with de-initialization and destruction.
-			    </li>
-			    <li class="fragment">
-				And 'move', why it should it even allow a special implementation?
-			    </li>
-			    <li class="fragment">
-				Why not just C's 'memmove()'?
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<h3>Rust: Move semantics by default</h3>
-			<ul>
-			    <li class="fragment">
-				All types are movable by default (under compiler-verified memory safety).
-			    </li>
-			    <li class="fragment">
-				Yes, it's 'memmove()'-like behind the scenes.
-			    </li>
-			    <li class="fragment">
-				No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing.
-			    </li>
-			    <li class="fragment">
-				Also, what we usually have as a constructor is just a regular function to wrap native Struct instantiation.
-			    </li>
-			    <li class="fragment">
-				Recall the Factory pattern the C++ experts advocate.
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<h3>Rust: Move semantics by default</h3>
-			<ul>
-			    <li class="fragment">
-				These are even more efficient than C++'s 'move', because when a 'moved from'
-				location goes out of scope, so we don't need a destructor call there.
-			    </li>
-			    <li class="fragment">
-				Instead, we have an optional `Drop` code that we can implemented for types
-				when their values go out scope.
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<div><pre><code class="hljs rust" data-trim contenteditable>
+	</code>
+   </pre>
+  </div>
+  <ul>
+   <li class="fragment">Feels like using 'move' is for the real experts.</li>
+   <li class="fragment">Otherwise you risk segfaults.</li>
+   <li class="fragment">&quot;Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from&quot;</li>
+  </ul></section><section>
+  <ul>
+   <li>
+		C++: We haven't even mentioned: error handling in constructors, exceptions from virtual destructors.
+	    </li>
+   <li class="fragment">
+		Perhaps 'default/copy/move constructors' and 'assignment constructors' were wrong to being with.
+	    </li>
+   <li class="fragment">
+		Coupling allocation (stack or heap) with initialization and construction was clearly a poor design choice.
+	    </li>
+   <li class="fragment">
+		Same with coupling de-allocation with de-initialization and destruction.
+	    </li>
+   <li class="fragment">
+		And 'move', why it should it even allow a special implementation?
+	    </li>
+   <li class="fragment">
+		Why not just C's 'memmove()'?
+	    </li>
+  </ul></section><section>
+  <h3>Rust: Move semantics by default
+  </h3>
+  <ul>
+   <li class="fragment">
+		All types are movable by default (under compiler-verified memory safety).
+	    </li>
+   <li class="fragment">
+		Yes, it's 'memmove()'-like behind the scenes.
+	    </li>
+   <li class="fragment">
+		No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing.
+	    </li>
+   <li class="fragment">
+		Also, what we usually have as a constructor is just a regular function to wrap native Struct instantiation.
+	    </li>
+   <li class="fragment">
+		Recall the Factory pattern the C++ experts advocate.
+	    </li>
+  </ul></section><section>
+  <h3>Rust: Move semantics by default
+  </h3>
+  <ul>
+   <li class="fragment">
+		These are even more efficient than C++'s 'move', because when a 'moved from'
+		location goes out of scope, so we don't need a destructor call there.
+	    </li>
+   <li class="fragment">
+		Instead, we have an optional `Drop` code that we can implemented for types
+		when their values go out scope.
+	    </li>
+  </ul></section><section>
+  <div>
+   <pre><code class="hljs rust" contenteditable="True" data-trim="True">
 			    a = b;
-			</code></pre></div>
-			<ul>
-			    <li class="fragment">
-				What does it mean? In either language? In C it is simple.
-			    </li>
-			    <li class="fragment">
-				In C++ it means: call a special or implicit copy assignment operator of pre-existing value "a", copying resources from "b". Was "b" modified in this
-				operation? Depending on <i>which</i> copy assigment operator was called.
-			    </li>
-			    <li class="fragment">
-				In Rust it means: Drop pre-existing "a" value and then move the content "b" into the place of "a". "b" no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<div><pre><code class="hljs rust" data-trim contenteditable>
-			    a = b; // Drop "a" and move "b" into "a"
-			</code></pre></div>
-			<ul>
-			    <li>Wait, what? In Rust you... what?</li>
-			    <li class="fragment">
-				Seems bizzare that we cannot access "b" after this?
-			    </li>
-			    <li class="fragment">
-				Makes sense. Think of the case in C where the copied type contains pointers. Now if we do stuff with "a" we need to assure that the pointers in "b" are still valid.
-			    </li>
-	  	  	    <li class="fragment">
-				There is a very common case in which the type of "a" and "b" is <i>Copyable</i>, such as with type "u32", or types that the developer specifically intends to be that way. In these cases "b" remains accessible and retains a bit-identical copy to "a", just like in 'C'.
-			    </li>
-			</ul>
-		    </section>
-		    <section>
-			<ul>
-			    <li>Anyway, we have very simple rules as to what happens in assignments.</li>
-			    <li class="fragment">What about parameter passing?</li>
-			</ul>
-<div class="fragment"><pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+	</code>
+   </pre>
+  </div>
+  <ul>
+   <li class="fragment">
+		What does it mean? In either language? In C it is simple.
+	    </li>
+   <li class="fragment">
+		In C++ it means: call a special or implicit copy assignment operator of pre-existing value &quot;a&quot;, copying resources from &quot;b&quot;. Was &quot;b&quot; modified in this
+		operation? Depending on <i>which</i> copy assigment operator was called.
+	    </li>
+   <li class="fragment">
+		In Rust it means: Drop pre-existing &quot;a&quot; value and then move the content &quot;b&quot; into the place of &quot;a&quot;. &quot;b&quot; no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
+	    </li>
+  </ul></section><section>
+  <div>
+   <pre><code class="hljs rust" contenteditable="True" data-trim="True">
+			    a = b; // Drop &quot;a&quot; and move &quot;b&quot; into &quot;a&quot;
+	</code>
+   </pre>
+  </div>
+  <ul>
+   <li>Wait, what? In Rust you... what?</li>
+   <li class="fragment">
+		Seems bizzare that we cannot access &quot;b&quot; after this?
+	    </li>
+   <li class="fragment">
+		Makes sense. Think of the case in C where the copied type contains pointers. Now if we do stuff with &quot;a&quot; we need to assure that the pointers in &quot;b&quot; are still valid.
+	    </li>
+   <li class="fragment">
+		There is a very common case in which the type of &quot;a&quot; and &quot;b&quot; is <i>Copyable</i>, such as with type &quot;u32&quot;, or types that the developer specifically intends to be that way. In these cases &quot;b&quot; remains accessible and retains a bit-identical copy to &quot;a&quot;, just like in 'C'.
+	    </li>
+  </ul></section><section>
+  <ul>
+   <li>Anyway, we have very simple rules as to what happens in assignments.</li>
+   <li class="fragment">What about parameter passing?</li>
+  </ul>
+  <div class="fragment">
+   <pre><code class="hljs rust" contenteditable="True" data-trim="True" style="font-height:50%">
 fn func_b(SomeType a) {
-    println!("{}", a);
+    println!(&quot;{}&quot;, a);
 }
 
 fn func_a(SomeType a) {
@@ -459,36 +465,34 @@ fn func_a(SomeType a) {
 fn example() {
     func_a(SomeType::new());
 }
-</div></code></pre>
-			<ul>
-			    <li class="fragment">Only one construction and one drop of SomeType happens here.</li>
-			</ul>
-		    </section>
-		    <section>
-			<ul>
-			    <li>But what about stack space in this example? And time it takes to memmove()?</li>
-			    <li class="fragment">Very good point. Don't panic.</li>
-			    <li class="fragment">We <i>can</i> pass references instead of moving stuff up and down, in and out of structs.</li>
-			    <li class="fragment">So, as it turns out, we have pointers to const data and mutable data just like in C/C++.</li>
-			    <li class="fragment">After wall, Rust is a system programming language.</li>
-			    <li class="fragment">And here it may get complicated. <span class="fragment">But unlike C++, in a good way!</span></li>
-			</ul>
-		    </section>
-		</section>
-		<section>
-		    <h2>Rust Features</h2>
-		    <ul>
-			<li>Pattern matching</li>
-			<li>Move semantics</li>
-			<li class="fragment highlight-yellow">Guaranteed memory safety</li>
-			<li>Type inference</li>
-			<li>Trait-based generics</li>
-			<li>Zero-cost abstractions</li>
-			<li>Threads without data races</li>
-			<li>Minimal runtime</li>
-			<li>Efficient C bindings</li>
-		    </ul>
-		</section>
+	    </code>
+   </pre>
+  </div>
+  <ul>
+   <li class="fragment">Only one construction and one drop of SomeType happens here.</li>
+  </ul></section><section>
+  <ul>
+   <li>But what about stack space in this example? And time it takes to memmove()?</li>
+   <li class="fragment">Very good point. Don't panic.</li>
+   <li class="fragment">We <i>can</i> pass references instead of moving stuff up and down, in and out of structs.</li>
+   <li class="fragment">So, as it turns out, we have pointers to const data and mutable data just like in C/C++.</li>
+   <li class="fragment">After wall, Rust is a system programming language.</li>
+   <li class="fragment">And here it may get complicated. <span class="fragment">But unlike C++, in a good way!</span></li>
+  </ul></section></section>
+<section><section>
+  <h2>Rust Features
+  </h2>
+  <ul>
+   <li>Pattern matching</li>
+   <li>Move semantics</li>
+   <li class="fragment highlight-yellow">Guaranteed memory safety</li>
+   <li>Type inference</li>
+   <li>Trait-based generics</li>
+   <li>Zero-cost abstractions</li>
+   <li>Threads without data races</li>
+   <li>Minimal runtime</li>
+   <li>Efficient C bindings</li>
+  </ul></section></section>
 	    </div>
 	</div>
 
