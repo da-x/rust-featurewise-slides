@@ -60,15 +60,20 @@ middle = f.read()
 f.close()
 
 from twisted.web import microdom
+changes = False
 dom = microdom.parseString("<xml>" + middle + "</xml>", beExtremelyLenient=1)
+orig_middle = middle
 dom = dom.childNodes[0].childNodes
 if "last" in sys.argv:
     dom = [dom[-1]]
+    changes = True
 if "last-inner" in sys.argv:
     dom = [dom[0].childNodes[-1]]
-middle = '\n'.join([i.toprettyxml() for i in dom])
+    changes = True
+middle = '\n'.join([i.toxml() for i in dom])
+if not changes:
+    middle = orig_middle
 data = HEADER + middle + FOOTER
-
 f = open("index.html", "w")
 f.write(data)
 f.close()

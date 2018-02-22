@@ -297,12 +297,12 @@ int main()
     v.push_back(str);
     std::cout << "After copy, str is \"" << str << "\"\n";
 
-				 v.push_back(std::move(str));
-				 std::cout << "After move, str is \"" << str << "\"\n";
+    v.push_back(std::move(str));
+    std::cout << "After move, str is \"" << str << "\"\n";
 
-				 std::cout << "The contents of the vector are \"" << v[0]
-	      << "\", \"" << v[1] << "\"\n";
-				 }
+    std::cout << "The contents of the vector are \"" << v[0]
+        << "\", \"" << v[1] << "\"\n";
+}
 	</code></pre></div>
 	<div class="fragment">'Moved from' location should remain valid
 	    after move because it is deconstructed later.</div>
@@ -462,6 +462,167 @@ fn example() {
 	    <li>Threads without data races</li>
 	    <li>Minimal runtime</li>
 	    <li>Efficient C bindings</li>
+	</ul>
+    </section>
+    <section>
+	<h3>Pointer safety</h3>
+	<ul>
+	    <li>Pointers are essential part of system programming.</li>
+	    <li class="fragment">In C, the most trivial example is passing a pointer.</li>
+	</ul>
+	<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+void func(struct item *ptr) {
+    /* ... */
+}</code></pre></div>
+	<ul>
+	    <li class="fragment">By convention some have NULL value, and others valid addresses.</li>
+	</ul>
+	<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+	   func(NULL);
+	</code></pre></div>
+	<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+	   /* Given an 'struct item bar' in scope */
+	   func(&bar);
+	</code></pre></div>
+    </section>
+    <section>
+	<ul>
+	    <li>However only by API we are told what is done with the pointer.</li>
+	    <li class="fragment">Does the function performs a NULL check?</li>
+	    <li class="fragment">Can it be NULL at all?</li>
+	    <li class="fragment">Does the function save the pointer?</li>
+	    <li class="fragment">If so, until when it is expected to be remained valid by the API?</li>
+	    <li class="fragment">Is it accssed from another thread? Do I need to apply locks?</li>
+	</ul>
+    </section>
+    <section>
+	<ul>
+	    <li>C++ has some "improvements" over this, using references.
+		<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+void func(Item &ref) {
+    /* ... */
+}</code></pre></div>
+	    </li>
+	    <li class="fragment">Alright, now we <b>cannot</b> pass NULL.
+		<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+	   // Given an 'struct item bar' in scope, pass a reference
+	   func(bar);
+	    </code></pre></div></li>
+	    <li class="fragment">
+		We have not passed "bar", but a reference to "bar".
+	    </li>
+	    <li class="fragment">
+		It <b>does not</b> look from the function call that 'func' can modify 'bar', but it
+		can. WTF?
+	    </li>
+	</ul>
+    </section>
+    <section>
+	<ul>
+	    <li>Unrelated to safety, my gripe with C++ is that the same function could have been defined as such:
+	<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+void func(Item item) {
+    /* ... */
+}</code></pre></div>
+	    </li>
+	    <li class="fragment">And the call will remain the same:
+		<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+func(bar);
+		</code></pre></div>
+	    </li>
+	    <li class="fragment">Does not say anything on whether we are temporarily creating a copy of an Item or passing a mutable reference to an existing one.</li>
+	</ul>
+    </section>
+    <section>
+	<ul>
+	    <li>At least to fix against mutability of the item, we can add 'const':
+		<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+void func(const Item &ref) {
+    /* ... */
+}</code></pre></div>
+	    </li>
+	    <li class="fragment">
+		Still, func() can save a pointer to the Item, so we still have the lifetime issue, loosely defined in APIs.
+	    </li>
+	</ul>
+    </section>
+    <section>
+	<ul>
+	    <li>In C++, there are smart pointers such as "std::unique_ptr":
+		<div><pre class="fragment"><code class="hljs c" data-trim contenteditable>
+void func(std::unique_ptr&lt;Item&gt; item) {
+    /* ... */
+}</code></pre></div>
+	    </li>
+	    <li class="fragment">
+		<b>Disadvantage</b>: Now it has to be on the heap, unless we laborously use a more extended type which gets a deleter function as a parameter.
+	    </li>
+	</ul>
+    </section>
+    <section>
+		<div><pre><code class="hljs c" data-trim contenteditable>
+struct Item {
+    int mul;
+    Item(int x, int y) : mul (x * y) { }
+};
+
+void func(std::unique_ptr&lt;Item&gt; item) {}
+
+int main()
+{
+    std::unique_ptr&lt;Item&gt; bla(new Item(1, 3));
+    func(std::move(bla));
+}
+</code></pre></div>
+    </section>
+    <section>
+		<div><pre><code class="hljs c" data-trim contenteditable>
+struct Item {
+    int mul;
+    Item(int x, int y) : mul (x * y) { }
+};
+
+void func_const(std::unique_ptr&lt;const Item&gt; item) {}
+
+int main()
+{
+    std::unique_ptr&lt;Item&gt; bla(new Item(1, 3));
+    func_const(std::move(bla));
+}
+</code></pre></div>
+    </section>
+    <section>
+	<ul>
+	    <li>
+		What other tools do we have to deal with pointer validity?
+	    </li>
+	    <li class="fragment">
+		In C++, std::shared_ptr&lt;T&gt;
+	    </li>
+	    <li class="fragment">
+		But use Boost's intrusive reference count, because it sits <b>with</b> the object in memory, and does not add pointer indirection.
+	    </li>
+	    <li class="fragment">
+		Maintaining a dynamic reference count has a performance penality, and we would have to use the dreaded std::move everywhere to avoid incref/decref to some extent.
+	    </li>
+	    <li class="fragment">
+		What we really want is to pass around references without fear.
+	    </li>
+	</ul>
+    </section>
+    <section>
+	<h3>Rust: Safe references</h3>
+	<ul>
+	    <li class="fragment">
+	    </li>
+	    <li class="fragment">
+	    </li>
+	    <li class="fragment">
+	    </li>
+	    <li class="fragment">
+	    </li>
+	    <li class="fragment">
+	    </li>
 	</ul>
     </section>
 </section>
