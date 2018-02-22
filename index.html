@@ -60,32 +60,32 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		    <ul>
 			<li class="fragment">We need a staticly typed, compiled language</li>
 			<li class="fragment">C: Has basic types, simple standard, hardly any correctness guarantees</li>
-			<li class="fragment">C++: Has generic types, very complex and problematic (next slides)</li>
-			<li class="fragment">Go: Has basic types and very simple generic types</li>
-			<li class="fragment">Java: Has memory management, GC, and generic types</li>
-			<li class="fragment">We want something better, best of all worlds</li>
+			<li class="fragment">C++: Has generic types, very complex and problematic</li>
+			<li class="fragment">Go: Has basic types, very limited generics, and GC</li>
+			<li class="fragment">Java: Has memory management, generics, and GC</li>
+			<li class="fragment">We want something better, best of all worlds if possible</li>
 		    </ul>
 		</section>
 		<section>
-		    <h2>Rust Features</h2>
-		    <ul>
-			<li class="fragment highlight-yellow">Pattern matching</li>
-			<li>Move semantics</li>
-			<li>Guaranteed memory safety</li>
-			<li>Type inference</li>
-			<li>Trait-based generics</li>
-			<li>Zero-cost abstractions</li>
-			<li>Threads without data races</li>
-			<li>Minimal runtime</li>
-			<li>Efficient C bindings</li>
-		    </ul>
-		</section>
-		<section>
+		    <section>
+			<h2>Rust Features</h2>
+			<ul>
+			    <li class="fragment highlight-yellow">Pattern matching</li>
+			    <li>Move semantics</li>
+			    <li>Guaranteed memory safety</li>
+			    <li>Type inference</li>
+			    <li>Trait-based generics</li>
+			    <li>Zero-cost abstractions</li>
+			    <li>Threads without data races</li>
+			    <li>Minimal runtime</li>
+			    <li>Efficient C bindings</li>
+			</ul>
+		    </section>
 		    <section>
 			<h2>Pattern Matching</h2>
 		    </section>
 		    <section>
-			<h2>Struct Deconstruction</h2>
+			<h3>Struct Deconstruction</h3>
 			<p class="fragment">First, let's look at Struct Deconstruction</p>
 			<div class="fragment">If a function returns a tuple, Python lets you do:
 			    <pre><code class="hljs python" data-trim contenteditable>
@@ -112,19 +112,19 @@ struct Example {
 			</code></pre></div>
 			<div class="fragment">We can deconstruct it, assigning the names locally
 			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
-let Example { some_int, some_string } = func()
+let Example { some_int, some_string } = func();
 println!("{}", some_int);
 			</code></pre></div>
 		    </section>
 		    <section>
 			<div>We don't have to use the same names
 			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
-let Example { some_int: bla, some_string } = func()
+let Example { some_int: bla, some_string } = func();
 println!("{}", bla);
 			</code></pre></div>
 			<div class="fragment">Or get them all
 			    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
-let Example { .., some_string } = func()
+let Example { .., some_string } = func();
 println!("{}", some_string);
 			</code></pre></div>
 		    </section>
@@ -258,25 +258,25 @@ enum Option&lt;T&gt; {
 		    </section>
 		</section>
 		<section>
-		    <h2>Rust Features</h2>
-		    <ul>
-			<li>Pattern matching</li>
-			<li class="fragment highlight-yellow">Move semantics</li>
-			<li>Guaranteed memory safety</li>
-			<li>Type inference</li>
-			<li>Trait-based generics</li>
-			<li>Zero-cost abstractions</li>
-			<li>Threads without data races</li>
-			<li>Minimal runtime</li>
-			<li>Efficient C bindings</li>
-		    </ul>
-		</section>
-		<section>
+		    <section>
+			<h2>Rust Features</h2>
+			<ul>
+			    <li>Pattern matching</li>
+			    <li class="fragment highlight-yellow">Move semantics</li>
+			    <li>Guaranteed memory safety</li>
+			    <li>Type inference</li>
+			    <li>Trait-based generics</li>
+			    <li>Zero-cost abstractions</li>
+			    <li>Threads without data races</li>
+			    <li>Minimal runtime</li>
+			    <li>Efficient C bindings</li>
+			</ul>
+		    </section>
 		    <section>
 			<h2>Move semantics</h2>
 		    </section>
 		    <section>
-			<h2>Move in C++</h2>
+			<h3>Move in C++</h3>
 			<ul>
 			    <li class="fragment">
 				Remember 'Constructors' and 'Destructors' in C++?
@@ -356,13 +356,19 @@ v = std::move(v); // undefined behavior
 		    <section>
 			<ul>
 			    <li>
-				C++: We haven't even mentioned: error handling in constructors, exceptions from virtual destructors, etc.
+				C++: We haven't even mentioned: error handling in constructors, exceptions from virtual destructors.
 			    </li>
 			    <li class="fragment">
-				Perhaps constructors and 'assignment constructors' were wrong to being with.
+				Perhaps 'default/copy/move constructors' and 'assignment constructors' were wrong to being with.
 			    </li>
 			    <li class="fragment">
-				And 'move', why it should it has a special implementation?
+				Coupling allocation (stack or heap) with initialization and construction was clearly a poor design choice.
+			    </li>
+			    <li class="fragment">
+				Same with coupling de-allocation with de-initialization and destruction.
+			    </li>
+			    <li class="fragment">
+				And 'move', why it should it even allow a special implementation?
 			    </li>
 			    <li class="fragment">
 				Why not just C's 'memmove()'?
@@ -370,7 +376,7 @@ v = std::move(v); // undefined behavior
 			</ul>
 		    </section>
 		    <section>
-			<h2>Rust: Move semantics by default</h2>
+			<h3>Rust: Move semantics by default</h3>
 			<ul>
 			    <li class="fragment">
 				All types are movable by default (under compiler-verified memory safety).
@@ -390,7 +396,7 @@ v = std::move(v); // undefined behavior
 			</ul>
 		    </section>
 		    <section>
-			<h2>Rust: Move semantics by default</h2>
+			<h3>Rust: Move semantics by default</h3>
 			<ul>
 			    <li class="fragment">
 				These are even more efficient than C++'s 'move', because when a 'moved from'
@@ -398,7 +404,7 @@ v = std::move(v); // undefined behavior
 			    </li>
 			    <li class="fragment">
 				Instead, we have an optional `Drop` code that we can implemented for types
-				to handle when their values go out scope.
+				when their values go out scope.
 			    </li>
 			</ul>
 		    </section>
@@ -432,7 +438,7 @@ v = std::move(v); // undefined behavior
 				Makes sense. Think of the case in C where the copied type contains pointers. Now if we do stuff with "a" we need to assure that the pointers in "b" are still valid.
 			    </li>
 	  	  	    <li class="fragment">
-				There is a very common case in which the type of "a" and "b" is <i>Copyable</i>, such as with type "u32", or types that the developer specifically intends to be that way. In these cases "b" remains accessible, and bit-identical to "a", just like in 'C'.
+				There is a very common case in which the type of "a" and "b" is <i>Copyable</i>, such as with type "u32", or types that the developer specifically intends to be that way. In these cases "b" remains accessible and retains a bit-identical copy to "a", just like in 'C'.
 			    </li>
 			</ul>
 		    </section>
@@ -462,7 +468,7 @@ fn example() {
 			<ul>
 			    <li>But what about stack space in this example? And time it takes to memmove()?</li>
 			    <li class="fragment">Very good point. Don't panic.</li>
-			    <li class="fragment">We can pass references instead of moving stuff up and down, in and out of structs.</li>
+			    <li class="fragment">We <i>can</i> pass references instead of moving stuff up and down, in and out of structs.</li>
 			    <li class="fragment">So, as it turns out, we have pointers to const data and mutable data just like in C/C++.</li>
 			    <li class="fragment">After wall, Rust is a system programming language.</li>
 			    <li class="fragment">And here it may get complicated. <span class="fragment">But unlike C++, in a good way!</span></li>
