@@ -1,10 +1,13 @@
 <section>
-    <span style="font-size:300%">
+    <span style="font-size:250%">
 	<p>Rust</p>
     </span>
-    <span style="font-size:150%">
-	System Programming Language
+    <span style="font-size:130%">
+	<p>System Programming Language</p>
     </span>
+    <div style="font-size:80%">
+	<p><i>An introduction for C/C++ programmers</i></p>
+    </div>
 </section>
 <section>
     <h2>System Programming</h2>
@@ -748,5 +751,26 @@ fn func(item: Some<&Item>) {
 	<div class="fragment">
 	    We won!
 	</div>
+    </section>
+    <section>
+	<ul>
+	    <li>
+		There is a special lifetime 'static', which marks references to a static read-only value, and is valid for the whole execution of the program.
+	    </li>
+	</ul>
+	<div><pre><code class="hljs rust" data-trim contenteditable>
+enum Other { SomeVal }
+
+struct Item {
+    val: u32,
+    other: &'static Other,
+}
+
+static OTHER : Other = Other::SomeVal;
+
+fn main() {
+    let item = Item { val: 3, other: &OTHER };
+}
+	</code></pre></div>
     </section>
 </section>
