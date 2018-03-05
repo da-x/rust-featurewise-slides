@@ -208,13 +208,13 @@ enum Shape {
 
 fn example(Shape cs) {
     match cs {
-	Code::Rect(1, _) =>
+	Shape::Rect(1, _) =>
 	   println!("Rect with 1 as first dimension"),
-	Code::Rect(_, 1) =>
+	Shape::Rect(_, 1) =>
 	   println!("Rect with 1 as second dimension"),
-	Code::Rect(_, _) =>
+	Shape::Rect(_, _) =>
 	   println!("All other boxes"),
-	Code::Cube(width, _, 10) =>
+	Shape::Cube(width, _, 10) =>
 	   println!("Only certain Cube's width {}", width),
 	_ => println!("all other possibilities"),
     }
@@ -433,7 +433,7 @@ fn func_a(SomeType a) {
 fn example() {
     func_a(SomeType::new());
 }
-	    </div></code></pre>
+	    </code></pre></div>
 	    <ul>
 		<li class="fragment">Only one construction and one drop of SomeType happens here.</li>
 	    </ul>
@@ -576,6 +576,7 @@ int main()
 </code></pre></div>
     </section>
     <section>
+	And with `const`:
 		<div><pre><code class="hljs c" data-trim contenteditable>
 struct Item {
     int mul;
@@ -614,15 +615,138 @@ int main()
 	<h3>Rust: Safe references</h3>
 	<ul>
 	    <li class="fragment">
+		By 'safe', means that programming error cannot cause invalid references in run-time.
 	    </li>
 	    <li class="fragment">
+		Instead, mishandling references is caught in compile-time.
 	    </li>
 	    <li class="fragment">
+		No run-time overhead, in contrast to reference-count based references.
 	    </li>
 	    <li class="fragment">
+		No data races: Multiple const references are allowed to the same data, only one mutable reference is allowed with no concurrent const references.
 	    </li>
 	    <li class="fragment">
+		Pointed data will not move or be dropped for the lifetime of the reference.
 	    </li>
 	</ul>
+    </section>
+    <section>
+	<ul>
+	    <li>
+		Use '&' to create a const reference:
+	    </li>
+	</ul>
+	<div><pre><code class="hljs rust" data-trim contenteditable>
+struct Item {
+    val: u32,
+}
+
+fn simple(item: &Item) {
+    // Can only read stuff from 'item'
+}
+
+fn main()
+{
+    let item = Item { val : 2 };
+    simple(&item);
+}
+	</code></pre></div>
+    </section>
+    <section>
+	Use '&mut ' to create a reference that allow mutation:
+	<div><pre><code class="hljs rust" data-trim contenteditable>
+struct Item {
+    val: u32,
+}
+
+fn simple_mut(item: &mut Item)
+{
+    item.val += 1;
+}
+
+fn main()
+{
+    let mut item = Item { val : 2 };
+    simple_mut(&mut item);
+    simple(&item);
+}
+	</code></pre></div>
+	<div class="fragment">
+	    The syntax for creating a reference matches the syntax of declaring its usage. Nice!
+	</div>
+    </section>
+    <section>
+	<ul>
+	    <li>
+		C-like pointers `*mut` and `*const` exist, called "unsafe references" in rust.
+	    </li>
+	    <li class="fragment">
+		To dereference them, or cast them to '&mut' and '&', you wrap the code with 'unsafe {}', to turn off the Rust 'safety protocols'.
+	    </li>
+	</ul>
+    </section>
+    <section>
+	<h3>Lifetimes</h3>
+	<ul>
+	    <li>Lifetimes a inherent part of the Rust's type system</li>
+	    <li class="fragment">
+		Every stack variable, parameter, or reference has a lifetime.
+	    </li>
+	    <li class="fragment">
+		Lifetimes are used for validating references in compile-time.
+	    </li>
+	    <li class="fragment">
+		On most cases lifetimes are infered.
+	    </li>
+	    <li class="fragment">
+		On others they can be specified.
+	    </li>
+	</ul>
+    </section>
+    <section>
+	Structs can have fields that are safe references:
+	<div><pre><code class="hljs rust" data-trim contenteditable>
+struct Item&lt;'a&gt; {
+    val: u32,
+    other: &'a Other,
+}
+	</code></pre></div>
+	<ul>
+	    <li class="fragment">
+		The `'&lt;name&gt;` thing is a life-time specifier, here it is a parameter of the type.
+	    </li>
+	    <li class="fragment">
+		Here, an instance of Item must be constructed with a givn reference to an 'Other'.
+	    </li>
+	    <li class="fragment">
+		It is guranteed in compile time that the reference to the 'Other' instance will be
+		valid while the instance of 'Item' is in scope.
+	    </li>
+	</ul>
+    </section>
+    <section>
+	Remember this?
+	<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+enum Option&lt;T&gt; {
+    None,
+    Some(T),
+}
+	</code></pre>
+	<div class="fragment">
+	Let's have:
+	<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+fn func(item: Some<&Item>) {
+    match item {
+	None => println!("No pointer"),
+	Some(item) =>
+	    println!("Always valid item: {}", item),
+    }
+}
+	</code></pre>
+	</div>
+	<div class="fragment">
+	    We won!
+	</div>
     </section>
 </section>
