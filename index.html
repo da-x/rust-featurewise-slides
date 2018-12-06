@@ -1,3 +1,30 @@
+
+<!doctype html>
+<html>
+    <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+	    var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+    </head>
+    <body>
+	<div class="reveal">
+	    <div class="slides">
 <section>
     <span style="font-size:250%">
 	<p>Rust</p>
@@ -24,25 +51,17 @@
     </ul>
 </section>
 <section>
-    <h2>System Programming: Challenges</h2>
-    <ul>
-	<li class="fragment">Because we want 'everything' - </li>
-	<li class="fragment">How to prevent programming mistakes with all this fine control?</li>
-	<li class="fragment">How to maintain correctness while achieving performance?</li>
-	<li class="fragment">Is there a holy grail of max correctness and max control?</li>
-    </ul>
-</section>
-<section>
     <h2>Languages</h2>
     <ul>
 	<li class="fragment">We need a staticly typed, compiled language</li>
-	<li class="fragment">C: Has basic types, simple standard, hardly any correctness guarantees</li>
-	<li class="fragment">C++: Has generic types, very complex and problematic</li>
 	<li class="fragment">Go: Has basic types, very limited generics, and GC</li>
 	<li class="fragment">Java: Has memory management, generics, and GC</li>
-	<li class="fragment">We want something better, best of all worlds if possible</li>
+	<li class="fragment">C: Too basic for our needs</li>
+	<li class="fragment">C++: It is well established, has many advantages, but carries a lot of design baggage</li>
     </ul>
+    C++ is as a serious contender, let's compare it with Rust -
 </section>
+<section data-external="challenges.html"></section>
 <section>
     <section>
 	<h2>Rust Features</h2>
@@ -774,3 +793,26 @@ fn main() {
 	</code></pre></div>
     </section>
 </section>
+
+	    </div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+	    // More info about config & dependencies:
+	    // - https://github.com/hakimel/reveal.js#configuration
+	    // - https://github.com/hakimel/reveal.js#dependencies
+	    Reveal.initialize({
+			      dependencies: [
+				  { src: 'plugin/markdown/marked.js' },
+				  { src: 'plugin/markdown/markdown.js' },
+                                  { src: 'plugin/external/external.js', condition: function() { return !!document.querySelector( '[data-external]' ); } },
+				  { src: 'plugin/notes/notes.js', async: true },
+				  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+			      ]
+	    });
+	</script>
+    </body>
+</html>
