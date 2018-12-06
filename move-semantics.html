@@ -62,7 +62,7 @@
 	    Also, special kind of constructor and assignment operator were added for it
 	</li>
 	<li class="fragment">
-	    Programmers are not sure when to use `std::move` (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>)
+	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>)
 	</li>
     </ul>
 </section>
@@ -111,7 +111,7 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
-    Example for move in `inline construction`
+    Example for move in <code class="hljs-i">inline construction</code>
     <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 struct Point {
     x: u32,
@@ -155,12 +155,13 @@ fn main() {
 }
 
 fn inner(Point a) {
-    // `a` is moved
+    // 'a' is moved from being an incoming parameter
+    // of 'inner' to being a parameter of 'receiver'
     receiver(a)
 }
 
 fn receiver(Point a) {
-    // `a` is dropped here
+    // 'a' is dropped here
 }
 	</code></pre></div>
 </section>
@@ -178,7 +179,7 @@ fn receiver(Point a) {
 </section>
 <section>
     <ul>
-	<li>`Drop` by default does nothing, unless it is overriden with `impl`</li>
+	<li><code class="hljs-i">Drop</code> by default does nothing, unless it is overriden with <code class="hljs-i">impl</code></li>
 	<li>It is called for values that <i>finally</i> went out of scope</li>
     </ul>
     <div><pre><code style="font-size:100%; line-height: 110%" class="hljs rust" data-trim contenteditable>
@@ -192,7 +193,7 @@ impl Drop for Point {
 	</code></pre></div>
 </section>
 <section>
-    <h3>Rust: The `move from lvalue` treatment</h3>
+    <h3>Rust: The 'move from lvalue' treatment</h3>
     <div><pre><code class="hljs rust" data-trim contenteditable>
 			a = b;
     </code></pre></div>
@@ -201,26 +202,26 @@ impl Drop for Point {
 	    What does it mean, depending on the language?
 	</li>
 	<li class="fragment">
-	    In C it is equivalent of `memcpy(&a, &b, sizeof(a))`.
+	    In C it is equivalent of <code class="hljs-i">memcpy(&a, &b, sizeof(a))</code>.
 	</li>
 	<li class="fragment">
-	    In C++ it means <i>roughly</i>: call a special or implicit copy or move assignment operator of pre-existing value `a`, copying resources from `b`. Was `b` modified in this operation? Depending on <i>which</i> copy assigment operator was called, depending if `b` is a move reference.
+	    In C++ it means <i>roughly</i>: call a special or implicit copy or move assignment operator of pre-existing value <code class="hljs-i">a</code>, copying resources from <code class="hljs-i">b</code>. Was <code class="hljs-i">b</code> modified in this operation? Depending on <i>which</i> copy assigment operator was called, depending if <code class="hljs-i">b</code> is a move reference.
 	</li>
     </ul>
 </section>
 <section>
     <div><pre><code class="hljs rust" data-trim contenteditable>
-			a = b; // Drop `a` and move `b` into `a`
+			a = b; // Drop `a` and move `b` into `a`'s address
     </code></pre></div>
     <ul>
 	<li class="fragment">
 	    Rust will only allow this if both values are owned.
 	</li>
 	<li class="fragment">
-	    It means, call `Drop::drop` on pre-existing `a` value and then do the equivalent of `memmove` of the content of `b` into the place of `a`. `b` is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
+	    It means, call <code class="hljs-i">Drop::drop</code> on pre-existing <code class="hljs-i">a</code> value and then do the equivalent of <code class="hljs-i">memmove</code> of the content of <code class="hljs-i">b</code> into the place of <code class="hljs-i">a</code>. <code class="hljs-i">b</code> is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
 	</li>
 	<li class="fragment">
-	    `b` is inaccessible, unless we the type has `Copy` impl, for example:
+	    <code class="hljs-i">b</code> is inaccessible, unless we the type has <code class="hljs-i">Copy</code> impl, for example:
 	</li>
     </ul>
     <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
@@ -235,13 +236,13 @@ struct Point {
     <h3>Rust: Copy and Clone</h3>
     <ul>
 	<li class="fragment">
-	    `Copy` is automatic trait for some types, such as borrowed read-only references, or PODs, but can be activated for some user types as well.
+	    <code class="hljs-i">Copy</code> is an automatic trait for some types, such as borrowed read-only references, or PODs, but can be activated for some user types as well.
 	</li>
 	<li class="fragment">
-	    `Clone` is another trait that is equivalent to C++'s <b>copy</b> constructor (<i>hence confusion if you migrating</i>). In Rust, it's just another optional method (but a trait method, which makes it more powerful).
+	    <code class="hljs-i">Clone</code> is another trait that is equivalent to C++'s <b>copy</b> constructor (<i>hence confusion if you migrating</i>). In Rust, it's just another optional method (but a trait method, which makes it more powerful).
 	</li>
 	<li class="fragment">
-	    Also, unlike in C++, `.clone()` needs to be called explicitly when you want to `deep-copy` a value instead of moving it, which makes the code clearer.
+	    Also, unlike in C++, <code class="hljs-i">.clone()</code> needs to be called explicitly when you want to 'deep copy' a value instead of moving it, which makes the code clearer.
 	</li>
     </ul>
 </section>
