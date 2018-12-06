@@ -14,8 +14,9 @@ based on dark.css by Ivan Sagalaev
 }
 
 .hljs-i {
-  padding: 0.5em;
+  margin: 1.0em;
   background: #3f3f3f;
+  font-family: monospace;
   color: #dcdcdc;
 }
 

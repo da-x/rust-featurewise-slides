@@ -19,13 +19,16 @@
     <h3>Move in C</h3>
     <ul>
 	<li class="fragment">
-	    In C, a 'move' is basically just a <code class="hljs-i">memcpy</code> call
+	    In C, a moving is basically just a <code class="hljs-i">memcpy</code> call
 	</li>
 	<li class="fragment">
-	    Program invariants determine if pointers to the copied-from location are still valid
+	    Program invariants determine if references to the copied-from location are still valid
 	</li>
 	<li class="fragment">
 	    That is, if we intended to move or just copy
+	</li>
+	<li class="fragment">
+	    Hardly any assitance from the compiler regarding to the validity of pointers
 	</li>
     </ul>
 </section>
@@ -47,7 +50,7 @@
     </ul>
 </section>
 <section>
-    <h3>Refresher: Move in C++</h3>
+    <h3>Move in C++ (cont')</h3>
     <ul>
 	<li class="fragment">
 	    Due to backward compatibility, move is not done by default for all values
@@ -64,49 +67,24 @@
     </ul>
 </section>
 <section>
-    <div> <pre class="fragment"><code class="hljs c++" data-trim contenteditable>
-// Simple move constructor
-A(A&& arg) : member(std::move(arg.member))
-{}
-
-// Simple move assignment operator
-A& operator=(A&& other) {
-     member = std::move(other.member);
-     return *this;
-}
-    </code></pre></div>
+    <h3>Rust: Move semantics by default</h3>
+    <ul>
+	<li class="fragment">
+	    All types are movable by default.
+	</li>
+	<li class="fragment">
+	    No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing (examples later on).
+	</li>
+	<li class="fragment">
+	    If a variable is movable, it was guaranteed in compile time that there are no extra references to it during the move in run-time.
+	</li>
+	<li class="fragment">
+	    Moving is <b>safe</b>.
+	</li>
+    </ul>
 </section>
 <section>
-    <div>Example program
-	<pre class="fragment"><code class="hljs c++" data-trim contenteditable>
-int main()
-{
-    std::string str = "Hello";
-    std::vector&lt;std::string&gt; v;
-
-    v.push_back(str);
-    std::cout << "After copy, str is \"" << str << "\"\n";
-
-    v.push_back(std::move(str));
-    std::cout << "After move, str is \"" << str << "\"\n";
-
-    std::cout << "The contents of the vector are \"" << v[0]
-	<< "\", \"" << v[1] << "\"\n";
-}
-    </code></pre></div>
-    <div class="fragment">'Moved from' location should remain valid
-	after move because it is deconstructed later.</div>
-</section>
-<section>
-    <div>Output
-	<pre><code class="hljs c++" data-trim contenteditable>
-After copy, str is "Hello"
-After move, str is ""
-The contents of the vector are "Hello", "Hello"
-    </code></pre></div>
-</section>
-<section>
-    <div>BTW, you should be careful with move, because:
+    <div>In contrast, in C++, beside usage, there are dangers:
 	<pre><code class="hljs c++" data-trim contenteditable>
 std::vector&lt;int&gt; v = {2, 3, 3};
 v = std::move(v); // undefined behavior
@@ -119,53 +97,24 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
+    <h3>Rust: Move used for construction</h3>
     <ul>
-	<li>
-	    C++: We haven't even mentioned: error handling in constructors, exceptions from virtual destructors.
-	</li>
-	<li class="fragment">
-	    Perhaps 'default/copy/move constructors' and 'assignment constructors' were wrong to being with.
-	</li>
-	<li class="fragment">
-	    Coupling allocation (stack or heap) with initialization and construction was clearly a poor design choice.
-	</li>
-	<li class="fragment">
-	    Same with coupling de-allocation with de-initialization and destruction.
-	</li>
-	<li class="fragment">
-	    And 'move', why it should it even allow a special implementation?
-	</li>
-	<li class="fragment">
-	    Why not just C's 'memmove()'?
-	</li>
-    </ul>
-</section>
-<section>
-    <h3>Rust: Move semantics by default</h3>
-    <ul>
-	<li class="fragment">
-	    All types are movable by default (under compiler-verified memory safety).
-	</li>
-	<li class="fragment">
-	    Yes, it's 'memmove()'-like behind the scenes.
-	</li>
-	<li class="fragment">
-	    No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing.
-	</li>
 	<li class="fragment">
 	    Also, what we usually have as a constructor is just a regular function to wrap native Struct instantiation.
 	</li>
 	<li class="fragment">
-	    Recall the Factory pattern the C++ experts advocate.
+	    Initializing structs and moving them around is what constitutes the C++-equivalent of construction in Rust.
+	</li>
+	<li class="fragment">
+	    In fact, moving is essential to constructors, which are normal 'method-less' function like you'd expect.
 	</li>
     </ul>
 </section>
 <section>
-    <h3>Rust: Move semantics by default</h3>
+    <h3>Rust: Destruction is simpler</h3>
     <ul>
 	<li class="fragment">
-	    These are even more efficient than C++'s 'move', because when a 'moved from'
-	    location goes out of scope, so we don't need a destructor call there.
+	    For destructors of 'moved-from' memory locations, Rust does not rely on optimizations that cancel them out, unlike in C++. They simply don't exist.
 	</li>
 	<li class="fragment">
 	    Instead, we have an optional <code class="hljs-i">Drop</code> code that we can implemented for types
