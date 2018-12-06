@@ -15,15 +15,23 @@
 <section id="move-semantics">
     <h2>Move semantics</h2>
 </section>
+<section id="move-in-c">
+    <h3>Move in C</h3>
+    <ul>
+	<li class="fragment">
+	    In C, a 'move' is basically just a <code class="hljs-i">memcpy</code> call
+	</li>
+	<li class="fragment">
+	    Program invariants determine if pointers to the copied-from location are still valid
+	</li>
+	<li class="fragment">
+	    That is, if we intended to move or just copy
+	</li>
+    </ul>
+</section>
 <section>
     <h3>Move in C++</h3>
     <ul>
-	<li class="fragment">
-	    Remember 'Constructors' and 'Destructors' in C++?
-	</li>
-	<li class="fragment">
-	    Yikes...
-	</li>
 	<li class="fragment">
 	    In C++, eventually it was realized that there are too many object constructions, copies, destructions.
 	</li>
@@ -39,16 +47,32 @@
     </ul>
 </section>
 <section>
-    <div>In C++, 'move constructor' and 'move assigment' look like this:
-	<pre class="fragment"><code class="hljs c++" data-trim contenteditable>
+    <h3>Refresher: Move in C++</h3>
+    <ul>
+	<li class="fragment">
+	    Due to backward compatibility, move is not done by default for all values
+	</li>
+	<li class="fragment">
+	    Instead, it is governed by newly introduced 'move reference' (<code class="hljs-i">&&</code>), and <code class="hljs-i">std::move</code>
+	</li>
+	<li class="fragment">
+	    Also, special kind of constructor and assignment operator were added for it
+	</li>
+	<li class="fragment">
+	    Programmers are not sure when to use `std::move` (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>)
+	</li>
+    </ul>
+</section>
+<section>
+    <div> <pre class="fragment"><code class="hljs c++" data-trim contenteditable>
 // Simple move constructor
 A(A&& arg) : member(std::move(arg.member))
 {}
 
 // Simple move assignment operator
 A& operator=(A&& other) {
- member = std::move(other.member);
- return *this;
+     member = std::move(other.member);
+     return *this;
 }
     </code></pre></div>
 </section>
@@ -57,17 +81,17 @@ A& operator=(A&& other) {
 	<pre class="fragment"><code class="hljs c++" data-trim contenteditable>
 int main()
 {
-std::string str = "Hello";
-std::vector&lt;std::string&gt; v;
+    std::string str = "Hello";
+    std::vector&lt;std::string&gt; v;
 
-v.push_back(str);
-std::cout << "After copy, str is \"" << str << "\"\n";
+    v.push_back(str);
+    std::cout << "After copy, str is \"" << str << "\"\n";
 
-v.push_back(std::move(str));
-std::cout << "After move, str is \"" << str << "\"\n";
+    v.push_back(std::move(str));
+    std::cout << "After move, str is \"" << str << "\"\n";
 
-std::cout << "The contents of the vector are \"" << v[0]
-    << "\", \"" << v[1] << "\"\n";
+    std::cout << "The contents of the vector are \"" << v[0]
+	<< "\", \"" << v[1] << "\"\n";
 }
     </code></pre></div>
     <div class="fragment">'Moved from' location should remain valid
@@ -91,6 +115,7 @@ v = std::move(v); // undefined behavior
 	<li class="fragment">Feels like using 'move' is for the real experts.</li>
 	<li class="fragment">Otherwise you risk segfaults.</li>
 	<li class="fragment">"Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from"</li>
+	<li class="fragment">Behavior depends on the type of object.</li>
     </ul>
 </section>
 <section>
@@ -143,7 +168,7 @@ v = std::move(v); // undefined behavior
 	    location goes out of scope, so we don't need a destructor call there.
 	</li>
 	<li class="fragment">
-	    Instead, we have an optional `Drop` code that we can implemented for types
+	    Instead, we have an optional <code class="hljs-i">Drop</code> code that we can implemented for types
 	    when their values go out scope.
 	</li>
     </ul>

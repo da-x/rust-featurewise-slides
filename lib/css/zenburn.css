@@ -13,6 +13,12 @@ based on dark.css by Ivan Sagalaev
   color: #dcdcdc;
 }
 
+.hljs-i {
+  padding: 0.5em;
+  background: #3f3f3f;
+  color: #dcdcdc;
+}
+
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-tag {
