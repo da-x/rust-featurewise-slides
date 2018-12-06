@@ -1,0 +1,189 @@
+    <section>
+	<h2>Rust Features</h2>
+	<ul>
+	    <li>Move semantics</li>
+	    <li class="fragment highlight-yellow">Pattern matching</li>
+	    <li>Guaranteed memory safety</li>
+	    <li>Type inference</li>
+	    <li>Trait-based generics</li>
+	    <li>Zero-cost abstractions</li>
+	    <li>Threads without data races</li>
+	    <li>Minimal runtime</li>
+	    <li>Efficient C bindings</li>
+	</ul>
+    </section>
+    <section>
+	<h2>Pattern Matching</h2>
+    </section>
+    <section>
+	<h3>Struct Deconstruction</h3>
+	<p class="fragment">First, let's look at Struct Deconstruction</p>
+	<div class="fragment">If a function returns a tuple, Python lets you do:
+	    <pre><code class="hljs python" data-trim contenteditable>
+(a, b) = func()
+	    </code></pre>
+	</div>
+	<div class="fragment">Instead of:
+	    <pre><code class="hljs python" data-trim contenteditable>
+value = func()
+a = value[0]
+b = value[1]
+
+	    </code></pre>
+	</div>
+    </section>
+    <section>
+	Imagine the same thing with C.
+	<div class="fragment">Now in Rust, suppose we have this struct:
+	    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+struct Example {
+    some_int: u32,
+    some_string: String,
+}
+	</code></pre></div>
+	<div class="fragment">We can deconstruct it, assigning the names locally
+	    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { some_int, some_string } = func();
+println!("{}", some_int);
+	</code></pre></div>
+    </section>
+    <section>
+	<div>We don't have to use the same names
+	    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { some_int: bla, some_string } = func();
+println!("{}", bla);
+	</code></pre></div>
+	<div class="fragment">Or get them all
+	    <pre class="fragment"><code class="hljs rust" data-trim contenteditable>
+let Example { .., some_string } = func();
+println!("{}", some_string);
+	</code></pre></div>
+    </section>
+    <section>
+	Combine deconstruction with equality to literals:
+	<pre><code class="hljs rust" data-trim contenteditable>
+match test() {
+    Example { some_int: 3, some_string } =>
+	println!("Int was three, string was {}",
+		 some_string),
+    Example { .., some_string } =>
+	println!("Int was anything else, string was {}",
+		 some_string),
+}
+	</code></pre>
+	<span class="fragment">Like an advanced form of C's 'switch', right?</span>
+    </section>
+    <section>
+	<h2>Pattern Matching</h2>
+	<ul>
+	    <li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
+	    <li class="fragment">Tagged unions == variant types == sum types</li>
+	</ul>
+    </section>
+    <section>
+	C: Tagged union definition
+	<pre><code class="hljs c" data-trim contenteditable>
+enum code {
+    CODE__OK,
+    CODE__ERR_WITH_VAL,
+    CODE__ERR_WITH_STR,
+};
+
+struct code_struct {
+    enum code tag;
+    union {
+	int val;
+	const char *str;
+    } u;
+};
+	</code></pre>
+    </section>
+    <section>
+	C: Tagged union access
+	<pre><code class="hljs c" data-trim contenteditable>
+void example(struct code_struct cs) {
+    switch (cs.tag) {
+    case CODE__OK:
+	printf("OK\n");
+	break;
+    case CODE__ERR_WITH_VAL:
+	printf("%d\n", cs.u.val);
+	break;
+    case CODE__ERR_WITH_STR:
+	printf("%s\n", cs.u.str);
+	break;
+    }
+}
+	</code></pre>
+    </section>
+    <section>
+	Rust: Same tagged union
+	<pre><code class="hljs rust" data-trim contenteditable>
+enum Code {
+    Ok,
+    ErrVal(u32),
+    ErrStr(String),
+}
+
+fn example(Code cs) {
+    match cs {
+	Code::Ok => println!("OK"),
+	Code::ErrVal(val) => println!("{}", val),
+	Code::ErrStr(val) => println!("{}", val),
+    }
+}
+	</code></pre>
+    </section>
+    <section>
+	If 'match' not exhausive we get a compilation error.
+    </section>
+    <section>
+	In Rust, construction is also easier
+	<pre><code class="hljs rust" data-trim contenteditable>
+			Code::Ok
+	</code></pre>
+
+	<pre><code class="hljs rust" data-trim contenteditable>
+			Code::ErrVal(3)
+	</code></pre>
+
+	<pre><code class="hljs rust" data-trim contenteditable>
+			Code::ErrString(String::new("A"))
+	</code></pre>
+
+	<div class="fragment">NOTE: The content of this `String` type is heap-allocated
+	    for simplicity of the example, but we could have used a reference string
+	    type with usage-dependent memory location.</div>
+    </section>
+    <section>
+	Rust: Deconstruction can be more elaborate
+	<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+enum Shape {
+    Rect(u32, u32),
+    Cube(u32, u32, u32),
+}
+
+fn example(Shape cs) {
+    match cs {
+	Shape::Rect(1, _) =>
+	   println!("Rect with 1 as first dimension"),
+	Shape::Rect(_, 1) =>
+	   println!("Rect with 1 as second dimension"),
+	Shape::Rect(_, _) =>
+	   println!("All other boxes"),
+	Shape::Cube(width, _, 10) =>
+	   println!("Only certain Cube's width {}", width),
+	_ => println!("all other possibilities"),
+    }
+}
+	</code></pre>
+    </section>
+    <section>
+	Rust: Option - A very useful type
+	<pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+enum Option&lt;T&gt; {
+    None,
+    Some(T),
+}
+	</code></pre>
+    </section>
