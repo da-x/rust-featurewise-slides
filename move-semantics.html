@@ -73,7 +73,7 @@
 	    All types are movable by default, as long as the borrow check determines they are <i>owned</i> in the executing context.
 	</li>
 	<li class="fragment">
-	    No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing (examples later on).
+	    No need to think hard ; This happens everywhere - in assignments, local variable declarations,  parameters passing, deconstruction (related the topic of pattern matching), and closure capture.
 	</li>
 	<li class="fragment">
 	    If a variable is movable, it was guaranteed in compile time that there are no extra references to it during the move in run-time.
@@ -111,7 +111,7 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
-    Example for move in <code class="hljs-i">inline construction</code>
+    Example for move in 'inline construction'
     <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 struct Point {
     x: u32,
@@ -239,10 +239,130 @@ struct Point {
 	    <code class="hljs-i">Copy</code> is an automatic trait for some types, such as borrowed read-only references, or PODs, but can be activated for some user types as well.
 	</li>
 	<li class="fragment">
-	    <code class="hljs-i">Clone</code> is another trait that is equivalent to C++'s <b>copy</b> constructor (<i>hence confusion if you migrating</i>). In Rust, it's just another optional method (but a trait method, which makes it more powerful).
+	    <code class="hljs-i">Clone</code> is another trait that is equivalent to C++'s <b>copy</b> constructor (<i>hence confusion if you are migrating</i>). In Rust, it's just another optional method (but a trait method).
 	</li>
 	<li class="fragment">
-	    Also, unlike in C++, <code class="hljs-i">.clone()</code> needs to be called explicitly when you want to 'deep copy' a value instead of moving it, which makes the code clearer.
+	    Also, unlike in C++, <code class="hljs-i">.clone()</code> needs to be called explicitly when you want to 'deep copy' a value instead of moving it, which makes the operation clearer than the C++ equivalent.
 	</li>
     </ul>
+</section>
+<section>
+    <h3>Rust: Move in deconstruction</h3>
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn inner_a(Point a) {
+    let Point { x , .. } = a;
+    // 'x' is moved out of 'a', 'y' is dropped
+    println!("{} x is", x);
+}
+
+fn inner_b(Point a) {
+    let Point { y: y_another_name , .. } = a;
+    // 'y' is moved out of 'a', 'x' is dropped
+    println!("{} y is", y_another_name);
+}
+	</code></pre></div>
+</section>
+<section>
+    <h3>Rust: Method self move</h3>
+    <ul>
+	<li class="fragment">
+	    Unlike in C++, where <code class="hljs-i">this</code> is always a pointer to the current class instance, in Rust it can be the variable itself
+	</li>
+	<li class="fragment">
+	    This means that the method can "consume" the object it is operating on, because it moves itself into being its first parameter.
+	</li>
+    </ul>
+</section>
+<section>
+    <h3>Rust: Method self move</h3>
+    <div><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+impl Point {
+    fn scale(self, factor: u32) -> Point {
+	Point {
+	    x: self.x * factor,
+	    y: self.y * factor,
+	}
+    }
+
+    fn mod_x(self, new_x: u32) -> Point {
+        // self is moved into here
+	Point {
+	    x: new_x,
+	    y: self.y,
+	}
+        // self is dropped here
+    }
+}
+
+fn inner(Point a) {
+    let new_a = a.scale(2).mod(1);
+    /* 'a' is not accessible here */
+}
+	</code></pre></div>
+</section>
+<section>
+    <h3>Rust: Move to and from the heap</h3>
+    <ul>
+	<li class="fragment">
+	    The basic <code class="hljs-i">unique_ptr</code> equivalent is named <code class="hljs-i">Box</code>.
+	</li>
+	<li class="fragment">
+	    Values are initialized on the stack moved into it.
+	</li>
+    </ul>
+    <div class="fragment"><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn simple(p: Point, pbox: Box&lt;Point&gt;) {
+    // Move p to the heap
+    let p_on_heap = Box::new(p);
+
+    // Move the Point pointed by pbox back to the stack
+    let p_on_stack = *pbox;
+
+    /* ... */
+}
+
+fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
+    // Swap between the points in the Box and on the Stack
+    std::mem::swap(&mut p, pbox);
+
+    // The point in pbox was 'reseated' by 'p' and now it is dropped.
+}
+    </code></pre></div>
+    <ul>
+	<li class="fragment">
+	    There is also a <code class="hljs-i">shared_ptr</code> equivalent named <code class="hljs-i">Rc</code>, which works similarly.
+	</li>
+    </ul>
+</section>
+<section>
+    <h3>Rust: Move into closures</h3>
+    <div class="fragment"><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+// Suppose Rect::contains takes Point
+
+fn does_not_build(p: Point, rects: Vec&lt;Rect&gt;) -> Vec&lt;Rect&gt; {
+    let vec_without_p =
+          rects.into_iter().filter(|rect| !rect.contains(p)).collect();
+    let p_try = p;
+   /*
+    | Compiler error:
+    |
+    |  let vec_without_p =
+    |        rects.into_iter().filter(|rect| !rect.contains(p)).collect();
+    |                                 ------ value moved (into closure) here
+    |  let p_try = p;
+    |      ^ value used here after move
+    */
+}
+    </code></pre></div>
+    <div class="fragment"><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+
+// But if it takes &Point, we are good
+
+fn lemme_fix_it(p: Point, rects: Vec&lt;Rect&gt;) -> Vec&lt;Rect&gt; {
+    let vec_without_p =
+          rects.into_iter().filter(|rect| !rect.contains(&p)).collect();
+    let p_try == p;
+    /* ... */
+}
+    </code></pre></div>
 </section>
