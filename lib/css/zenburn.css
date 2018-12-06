@@ -13,6 +13,11 @@ based on dark.css by Ivan Sagalaev
   color: #dcdcdc;
 }
 
+code.reveal .hljs-small {
+  font-size: 100%;
+  line-height: 100%;
+}
+
 .hljs-i {
   margin: 1.0em;
   background: #3f3f3f;

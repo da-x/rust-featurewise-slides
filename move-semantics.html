@@ -70,7 +70,7 @@
     <h3>Rust: Move semantics by default</h3>
     <ul>
 	<li class="fragment">
-	    All types are movable by default.
+	    All types are movable by default, as long as the borrow check determines they are <i>owned</i> in the executing context.
 	</li>
 	<li class="fragment">
 	    No need to think hard ; This happens everywhere - in assignments, local variable declerations, and parameters passing (examples later on).
@@ -79,7 +79,7 @@
 	    If a variable is movable, it was guaranteed in compile time that there are no extra references to it during the move in run-time.
 	</li>
 	<li class="fragment">
-	    Moving is <b>safe</b>.
+	    Moving is <b>safe</b>. We cannot use a moved value in its original location.
 	</li>
     </ul>
 </section>
@@ -111,6 +111,60 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
+    Example for move in `inline construction`
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+struct Point {
+    x: u32,
+    y: u32,
+}
+
+fn main() {
+    // The instance of Point below is moved
+    // into the function `inner`.
+    inner(Point { x: 4, y: 3});
+}
+
+fn inner(p: Point)
+{
+    /* whatever code here */
+}
+	</code></pre></div>
+</section>
+<section>
+    Example for a "construction" pattern
+    <div><pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+impl Point {
+    fn new(x: u32, y: u32) -> Point {
+        // The instance creaet below is moved out
+	// to the return value, equivalent to C++ RVO.
+        Point { x, y}
+    }
+
+    // Another constructor:
+    fn with_offset(x: u32, y: u32) -> Point {
+        Point { x: x + 1, y: y + 2}
+    }
+}
+	</code></pre></div>
+</section>
+<section>
+    Moving is to function parameters down the stack
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn main() {
+    inner(Point { x: 4, y: 3});
+}
+
+fn inner(Point a) {
+    // `a` is moved
+    receiver(a)
+}
+
+fn receiver(Point a) {
+    // `a` is dropped here
+}
+	</code></pre></div>
+</section>
+<section>
     <h3>Rust: Destruction is simpler</h3>
     <ul>
 	<li class="fragment">
@@ -123,68 +177,71 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
+    <ul>
+	<li>`Drop` by default does nothing, unless it is overriden with `impl`</li>
+	<li>It is called for values that <i>finally</i> went out of scope</li>
+    </ul>
+    <div><pre><code style="font-size:100%; line-height: 110%" class="hljs rust" data-trim contenteditable>
+impl Drop for Point {
+    fn drop(&mut self) {
+        println!("Point having x={}, y={} dropped",
+	          self.x, self.y);
+	// If it had resources, we free them here.
+    }
+}
+	</code></pre></div>
+</section>
+<section>
+    <h3>Rust: The `move from lvalue` treatment</h3>
     <div><pre><code class="hljs rust" data-trim contenteditable>
 			a = b;
     </code></pre></div>
     <ul>
 	<li class="fragment">
-	    What does it mean? In either language? In C it is simple.
+	    What does it mean, depending on the language?
 	</li>
 	<li class="fragment">
-	    In C++ it means: call a special or implicit copy assignment operator of pre-existing value "a", copying resources from "b". Was "b" modified in this
-	    operation? Depending on <i>which</i> copy assigment operator was called.
+	    In C it is equivalent of `memcpy(&a, &b, sizeof(a))`.
 	</li>
 	<li class="fragment">
-	    In Rust it means: Drop pre-existing "a" value and then memmove the content of "b" into the place of "a". "b" is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
+	    In C++ it means <i>roughly</i>: call a special or implicit copy or move assignment operator of pre-existing value `a`, copying resources from `b`. Was `b` modified in this operation? Depending on <i>which</i> copy assigment operator was called, depending if `b` is a move reference.
 	</li>
     </ul>
 </section>
 <section>
     <div><pre><code class="hljs rust" data-trim contenteditable>
-			a = b; // Drop "a" and move "b" into "a"
+			a = b; // Drop `a` and move `b` into `a`
     </code></pre></div>
     <ul>
-	<li>Wait, what? In Rust you... what?</li>
 	<li class="fragment">
-	    Seems bizzare that we cannot access "b" after this?
+	    Rust will only allow this if both values are owned.
 	</li>
 	<li class="fragment">
-	    Makes sense. Think of the case in C where the copied type contains pointers. Now if we do stuff with "a" we need to assure that the pointers in "b" are still valid.
+	    It means, call `Drop::drop` on pre-existing `a` value and then do the equivalent of `memmove` of the content of `b` into the place of `a`. `b` is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
 	</li>
 	<li class="fragment">
-	    There is a very common case in which the type of "a" and "b" is <i>Copyable</i>, such as with type "u32", or types that the developer specifically intends to be that way. In these cases "b" remains accessible and retains a bit-identical copy to "a", just like in 'C'.
+	    `b` is inaccessible, unless we the type has `Copy` impl, for example:
 	</li>
     </ul>
-</section>
-<section>
-    <ul>
-	<li>Anyway, we have very simple rules as to what happens in assignments.</li>
-	<li class="fragment">What about parameter passing?</li>
-    </ul>
-    <div class="fragment"><pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
-fn func_b(SomeType a) {
-println!("{}", a);
-}
-
-fn func_a(SomeType a) {
-func_b(a)
-}
-
-fn example() {
-func_a(SomeType::new());
+    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+#[derive(Copy, Clone)]
+struct Point {
+    x: u32,
+    y: u32,
 }
 	</code></pre></div>
-	<ul>
-	    <li class="fragment">Only one construction and one drop of SomeType happens here.</li>
-	</ul>
 </section>
 <section>
+    <h3>Rust: Copy and Clone</h3>
     <ul>
-	<li>But what about stack space in this example? And time it takes to memmove()?</li>
-	<li class="fragment">Very good point. Don't panic.</li>
-	<li class="fragment">We <i>can</i> pass references instead of moving stuff up and down, in and out of structs.</li>
-	<li class="fragment">So, as it turns out, we have pointers to const data and mutable data just like in C/C++.</li>
-	<li class="fragment">After wall, Rust is a system programming language.</li>
-	<li class="fragment">And here it may get complicated. <span class="fragment">But unlike C++, in a good way!</span></li>
+	<li class="fragment">
+	    `Copy` is automatic trait for some types, such as borrowed read-only references, or PODs, but can be activated for some user types as well.
+	</li>
+	<li class="fragment">
+	    `Clone` is another trait that is equivalent to C++'s <b>copy</b> constructor (<i>hence confusion if you migrating</i>). In Rust, it's just another optional method (but a trait method, which makes it more powerful).
+	</li>
+	<li class="fragment">
+	    Also, unlike in C++, `.clone()` needs to be called explicitly when you want to `deep-copy` a value instead of moving it, which makes the code clearer.
+	</li>
     </ul>
 </section>
