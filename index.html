@@ -35,6 +35,12 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 		<div style="font-size:80%">
 		    <p><i>An introduction for C/C++ programmers</i></p>
 		</div>
+		<small><a href="http://aloni.org">Dan Aloni</a> |
+		    <a href="http://twitter.com/DanAloni">
+			<img src="img/icons8-twitter.svg" style="margin: 0px 0px; border: 0px; background: none" height="32" width="32"/>
+			@DanAloni
+		    </a>
+		</small>
 	    </section>
 	    <section id="system-programming">
 		<h2>System Programming</h2>
@@ -65,6 +71,13 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 	    <section data-external="move-semantics.html"></section>
 	    <section data-external="pattern-matching.html"></section>
 	    <section data-external="guaranteed-memory-safety.html"></section>
+
+	    <!-- <div class="footer" id="footer" style="display:none"> -->
+		<!-- Dan Aloni | -->
+		<!-- <img src="img/icons8-twitter.svg" -->
+		<!-- style="margin: 0px 0px; border: 0px; background: none" height="16" width="16"/> @DanAloni -->
+	    <!-- </div> -->
+
 	    </div>
 	</div>
 
@@ -76,16 +89,23 @@ document.getElementsByTagName( 'head' )[0].appendChild( link );
 	    // - https://github.com/hakimel/reveal.js#configuration
 	    // - https://github.com/hakimel/reveal.js#dependencies
 	    Reveal.initialize({
-			      fragmentInURL: true,
-			      history: true,
-			      dependencies: [
-				  { src: 'plugin/markdown/marked.js' },
-				  { src: 'plugin/markdown/markdown.js' },
-                                  { src: 'plugin/external/external.js', condition: function() { return !!document.querySelector( '[data-external]' ); } },
-				  { src: 'plugin/notes/notes.js', async: true },
-				  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-			      ]
+		  fragmentInURL: true,
+		  history: true,
+		  dependencies: [
+		      { src: 'plugin/markdown/marked.js' },
+		      { src: 'plugin/markdown/markdown.js' },
+		      { src: 'plugin/external/external.js', condition: function() { return !!document.querySelector( '[data-external]' ); } },
+		      { src: 'plugin/notes/notes.js', async: true },
+		      { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+		  ]
 	    });
+
+            /*
+	    Reveal.addEventListener( 'ready', function( event ) {
+		var footer = $('#footer').html();
+		$('.slide-background').append(footer);
+	    });
+	    */
 	</script>
     </body>
 </html>

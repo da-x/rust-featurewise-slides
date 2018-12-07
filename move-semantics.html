@@ -1,7 +1,7 @@
 <section>
     <h2>Rust Features</h2>
     <ul>
-	<li class="fragment highlight-yellow">Move semantics</li>
+	<li style="color: #ffff00">Move semantics</li>
 	<li>Pattern matching</li>
 	<li>Guaranteed memory safety</li>
 	<li>Type inference</li>
@@ -84,7 +84,7 @@
     </ul>
 </section>
 <section>
-    <div>In contrast, in C++, beside usage, there are dangers:
+    <div>In C++ for contrast, beside usage, there are dangers:
 	<pre><code class="hljs c++" data-trim contenteditable>
 std::vector&lt;int&gt; v = {2, 3, 3};
 v = std::move(v); // undefined behavior
@@ -112,16 +112,18 @@ v = std::move(v); // undefined behavior
 </section>
 <section>
     Example for move in 'inline construction'
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:85%; line-height: 95%" class="hljs rust" data-trim contenteditable>
 struct Point {
     x: u32,
     y: u32,
+    name: String, // C++ equiv.: std::string
 }
+// NOTE: mem::size_of::&lt;Point&gt;() == 16, name is just a pointer
 
 fn main() {
     // The instance of Point below is moved
     // into the function `inner`.
-    inner(Point { x: 4, y: 3});
+    inner(Point { x: 4, y: 3, name: "X".to_owned() });
 }
 
 fn inner(p: Point)
@@ -131,27 +133,50 @@ fn inner(p: Point)
 	</code></pre></div>
 </section>
 <section>
-    Example for a "construction" pattern
-    <div><pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+struct Point {
+    x: u32,
+    y: u32,
+    name: String, // Owned string
+}
+
+fn main() {
+    // The instance of Point below is moved
+    // into the function `inner`.
+    inner(Point { x: 4, y: 3, name: "X".to_owned() });
+}
+
+fn inner(p: Point)
+{
+    /* whatever code here */
+}
+	</code></pre></div>
+</section>
+<section>
+    Example for a 'constructor pattern'
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 impl Point {
-    fn new(x: u32, y: u32) -> Point {
-        // The instance creaet below is moved out
+    fn new(x: u32, y: u32, name: String) -> Point {
+	// Three moves of `x`, `y`, and `name` from
+	// parameters into constructed Point.
+        // The instance created below is moved out
 	// to the return value, equivalent to C++ RVO.
-        Point { x, y}
+        Point { x, y, name }
     }
 
     // Another constructor:
     fn with_offset(x: u32, y: u32) -> Point {
-        Point { x: x + 1, y: y + 2}
+        Point { x: x + 1, y: y + 2,
+	   name: "I have an offset".to_owned()}
     }
 }
 	</code></pre></div>
 </section>
 <section>
-    Moving is to function parameters down the stack
+    Moving into function parameters down the stack
     <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 fn main() {
-    inner(Point { x: 4, y: 3});
+    inner(Point { x: 4, y: 3, name: "in main".to_owned() });
 }
 
 fn inner(Point a) {
@@ -162,6 +187,27 @@ fn inner(Point a) {
 
 fn receiver(Point a) {
     // 'a' is dropped here
+}
+	</code></pre></div>
+</section>
+<section>
+    Moving back from return value
+    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn main() {
+    inner(Point { x: 4, y: 3, name: "in main".to_owned() });
+}
+
+fn inner(Point a) -> Point {
+    // 'a' is moved from being an incoming parameter
+    // of 'inner' to being a parameter of 'echo'
+    echo(a)
+    // Return value of 'echo' is moved to the return
+    // value of 'inner'
+}
+
+fn echo(Point a) -> Point {
+    // 'a' is moved back to the return value
+    a
 }
 	</code></pre></div>
 </section>
@@ -221,16 +267,9 @@ impl Drop for Point {
 	    It means, call <code class="hljs-i">Drop::drop</code> on pre-existing <code class="hljs-i">a</code> value and then do the equivalent of <code class="hljs-i">memmove</code> of the content of <code class="hljs-i">b</code> into the place of <code class="hljs-i">a</code>. <code class="hljs-i">b</code> is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
 	</li>
 	<li class="fragment">
-	    <code class="hljs-i">b</code> is inaccessible, unless we the type has <code class="hljs-i">Copy</code> impl, for example:
+	    There's just one exception to that rule.
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
-#[derive(Copy, Clone)]
-struct Point {
-    x: u32,
-    y: u32,
-}
-	</code></pre></div>
 </section>
 <section>
     <h3>Rust: Copy and Clone</h3>
@@ -247,18 +286,76 @@ struct Point {
     </ul>
 </section>
 <section>
+    <div><pre><code class="hljs rust" data-trim contenteditable>
+			a = b; // Drop `a` and move `b` into `a`'s address
+    </code></pre></div>
+    <ul>
+	<li>
+	    If the type implements <code class="hljs-i">Copy</code>, then <code class="hljs-i">b</code> will be accsssible, just like in C. Valid for PODs, and user types that derive <code class="hljs-i">Copy</code>:
+	</li>
+    </ul>
+    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+#[derive(Copy)]
+struct Point {
+    x: u32,
+    y: u32,
+}
+	</code></pre></div>
+    <ul>
+	<li class="fragment">
+	    Types that cannot be <code class="hljs-i">Copy</code> can derive <code class="hljs-i">Clone</code> instead:
+	</li>
+    </ul>
+    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+#[derive(Clone)]
+struct Point {
+    x: u32,
+    y: u32,
+    name: String,
+}
+     </code></pre></div>
+</section>
+<section>
+    <ul>
+	<li>
+	    Auto-deriving example equivalent to the following:
+	</li>
+    </ul>
+    <div><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+// Auto-derived code:
+
+impl Clone for Point {
+    fn clone(&self) -> Point {
+        Point {
+	    x: self.x.clone(), // Optimized to a simple copy
+	    y: self.y.clone(), // -- because it is POD (u32)
+	    name: self.name.clone(), // New heap string alloc
+	}
+    }
+}
+	</code></pre></div>
+</section>
+<section>
     <h3>Rust: Move in deconstruction</h3>
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn inner_a(Point a) {
+    let Point { x , y, name } = a;
+    // Both 'x', 'y', and 'name' are moved out of 'a', we
+    // cannot access `a` any more.
+}
+
 fn inner_a(Point a) {
     let Point { x , .. } = a;
-    // 'x' is moved out of 'a', 'y' is dropped
-    println!("{} x is", x);
+    // 'x' is moved out of 'a', 'y' and 'name' are dropped
+    println!("x is {}", x);
+    // 'x' is dropped later
 }
 
 fn inner_b(Point a) {
     let Point { y: y_another_name , .. } = a;
-    // 'y' is moved out of 'a', 'x' is dropped
-    println!("{} y is", y_another_name);
+    // 'y' is moved out of 'a', 'x' and 'name are dropped
+    println!("y is {}", y_another_name);
+    // 'y_another_name' is dropepd later
 }
 	</code></pre></div>
 </section>
@@ -275,22 +372,26 @@ fn inner_b(Point a) {
 </section>
 <section>
     <h3>Rust: Method self move</h3>
-    <div><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 impl Point {
     fn scale(self, factor: u32) -> Point {
 	Point {
 	    x: self.x * factor,
 	    y: self.y * factor,
+	    name: "scaled".to_owned(),
 	}
     }
 
     fn mod_x(self, new_x: u32) -> Point {
-        // self is moved into here
+        let Point { y, name, .. } = self;
+
+	// All is moving here, no String alloc/dealloc/clone happened :)
+
 	Point {
 	    x: new_x,
-	    y: self.y,
+	    y,
+	    name,
 	}
-        // self is dropped here
     }
 }
 
