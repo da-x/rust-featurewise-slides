@@ -53,16 +53,16 @@
     <h3>Move in C++ (cont')</h3>
     <ul>
 	<li class="fragment">
-	    Due to backward compatibility, move is not done by default for all values
+	    Due to backward compatibility, move is not done by default for all values.
 	</li>
 	<li class="fragment">
-	    Instead, it is governed by newly introduced 'move reference' (<code class="hljs-i">&&</code>), and <code class="hljs-i">std::move</code>
+	    Instead, it is governed by newly introduced 'move reference' (<code class="hljs-i">&&</code>), and <code class="hljs-i">std::move</code>.
 	</li>
 	<li class="fragment">
-	    Also, special kind of constructor and assignment operator were added for it
+	    Also, special kind of constructor and assignment operator were added for it.
 	</li>
 	<li class="fragment">
-	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>)
+	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>).
 	</li>
     </ul>
 </section>
@@ -264,7 +264,10 @@ impl Drop for Point {
 	    Rust will only allow this if both values are owned.
 	</li>
 	<li class="fragment">
-	    It means, call <code class="hljs-i">Drop::drop</code> on pre-existing <code class="hljs-i">a</code> value and then do the equivalent of <code class="hljs-i">memmove</code> of the content of <code class="hljs-i">b</code> into the place of <code class="hljs-i">a</code>. <code class="hljs-i">b</code> is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
+	    It's neatly defined - there's no overridable 'move operation'.
+	</li>
+	<li class="fragment">
+	    <code class="hljs-i">a = b;</code> means; if implementation exists, call <code class="hljs-i">Drop::drop</code> on pre-existing <code class="hljs-i">a</code> value and then do the equivalent of <code class="hljs-i">memmove</code> of the content of <code class="hljs-i">b</code> into the place of <code class="hljs-i">a</code>. <code class="hljs-i">b</code> is no longer accessible afterward - the <b>compiler</b> will give us an error if we try to access it.
 	</li>
 	<li class="fragment">
 	    There's just one exception to that rule.
@@ -363,10 +366,10 @@ fn inner_b(Point a) {
     <h3>Rust: Method self move</h3>
     <ul>
 	<li class="fragment">
-	    Unlike in C++, where <code class="hljs-i">this</code> is always a pointer to the current class instance, in Rust it can be the variable itself
+	    Unlike in C++, where <code class="hljs-i">this</code> is always a pointer to the current class instance, in Rust it can be the variable itself.
 	</li>
 	<li class="fragment">
-	    This means that the method can "consume" the object it is operating on, because it moves itself into being its first parameter.
+	    This means that the method can "consume" the object it is operating on, because it moves itself into being the first method parameter.
 	</li>
     </ul>
 </section>
@@ -385,7 +388,7 @@ impl Point {
     fn mod_x(self, new_x: u32) -> Point {
         let Point { y, name, .. } = self;
 
-	// All is moving here, no String alloc/dealloc/clone happened :)
+	// Just moves here, no String alloc/dealloc/clone happened :)
 
 	Point {
 	    x: new_x,
@@ -397,7 +400,7 @@ impl Point {
 
 fn inner(Point a) {
     let new_a = a.scale(2).mod(1);
-    /* 'a' is not accessible here */
+    // 'a' is not accessible here
 }
 	</code></pre></div>
 </section>
@@ -437,33 +440,55 @@ fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
 </section>
 <section>
     <h3>Rust: Move into closures</h3>
-    <div class="fragment"><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
-// Suppose Rect::contains takes Point
+    <ul>
+	<li>
+	    Closures automatically capture referred scoped variables
+	</li>
+    </ul>
+    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn main() {
+    let point = Point { x: 2, y: 4, name: "x".to_owned()};
+    let point2 = point.clone();
 
-fn does_not_build(p: Point, rects: Vec&lt;Rect&gt;) -> Vec&lt;Rect&gt; {
-    let vec_without_p =
-          rects.into_iter().filter(|rect| !rect.contains(p)).collect();
-    let p_try = p;
-   /*
-    | Compiler error:
-    |
-    |  let vec_without_p =
-    |        rects.into_iter().filter(|rect| !rect.contains(p)).collect();
-    |                                 ------ value moved (into closure) here
-    |  let p_try = p;
-    |      ^ value used here after move
-    */
+    let closure = |a, b| {
+        // Whole of 'point' is moved into the closure.
+        let point_moved = point;
+        println!("point = {:?}", point_moved);
+
+        // point2 _borrowed_ by the closure
+        let point_borrowed = &point2;
+        println!("point2 = {:?}", point_borrowed);
+	a + b
+    };
+
+    closure(2, 3);
 }
     </code></pre></div>
-    <div class="fragment"><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+</section>
+<section>
+    <h3>Rust: Move into closures</h3>
+    <ul>
+	<li>
+	    'move' keyword forces 'move capture' rather than 'reference capture'
+	</li>
+    </ul>
+    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+fn main() {
+    let point = Point { x: 2, y: 4, name: "x".to_owned()};
+    let point2 = point.clone();
 
-// But if it takes &Point, we are good
+    let closure = move |a, b| {
+        // Whole of 'point' is moved into the closure.
+        let point_moved = point;
+        println!("point = {:?}", point_moved);
 
-fn lemme_fix_it(p: Point, rects: Vec&lt;Rect&gt;) -> Vec&lt;Rect&gt; {
-    let vec_without_p =
-          rects.into_iter().filter(|rect| !rect.contains(&p)).collect();
-    let p_try == p;
-    /* ... */
+        // Now point2 is also moved
+        let point2_moved = &point2;
+        println!("point2 = {:?}", point2_moved);
+	a + b
+    };
+
+    closure(2, 3);
 }
     </code></pre></div>
 </section>
