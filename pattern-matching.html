@@ -67,7 +67,9 @@ println!("{}", name);
     </ul>
 </section>
 <section>
-    Combine deconstruction with equality to literals:
+    <ul>
+        <li>Combine deconstruction with equality to literals:</li>
+    </ul>
     <pre><code class="hljs rust" data-trim contenteditable>
 match test() {
     Example { age: 3, name } =>
@@ -122,6 +124,20 @@ void example(struct code_struct cs) {
 	}
     }
 }
+    </code></pre>
+</section>
+<section>
+    <h3>C++: Variant type</h3>
+    <pre><code class="hljs c++" data-trim contenteditable>
+    struct empty {};
+    struct err_with_val {
+	int errno;
+    };
+    struct err_with_str {
+        std::string errstr;
+    };
+
+    std::variant&lt;empty, int, std::string&gt;
     </code></pre>
 </section>
 <section>
