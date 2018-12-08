@@ -127,17 +127,17 @@ void example(struct code_struct cs) {
     </code></pre>
 </section>
 <section>
-    <h3>C++: Variant type</h3>
+    <h3>C++: Variant type (C++17)</h3>
     <pre><code class="hljs c++" data-trim contenteditable>
-    struct empty {};
-    struct err_with_val {
-	int errno;
-    };
-    struct err_with_str {
-        std::string errstr;
-    };
+struct empty {};
+struct err_with_val {
+    int errno;
+};
+struct err_with_str {
+    std::string errstr;
+};
 
-    std::variant&lt;empty, int, std::string&gt;
+using code = std::variant&lt;empty, err_with_val, err_with_str&gt;;
     </code></pre>
 </section>
 <section>
@@ -152,8 +152,8 @@ enum Code {
 fn example(Code cs) {
     match cs {
 	Code::Ok => println!("OK"),
-	Code::ErrVal(val) => println!("{}", val),
-	Code::ErrStr(val) => println!("{}", val),
+	Code::ErrVal(val) => println!("errno: {}", val),
+	Code::ErrStr(val) => println!("msg: {}", val),
     }
 }
     </code></pre>
@@ -186,7 +186,7 @@ fn example(Code cs) {
     </ul>
 </section>
 <section>
-    Rust: Deconstruction can be more elaborate
+    <h3>Elaborate Matching in Deconstruction</h3>
     <pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 enum Shape {
     Rect(u32, u32),
@@ -209,7 +209,7 @@ fn example(Shape cs) {
     </code></pre>
 </section>
 <section>
-    Rust: Option - A very useful type
+    <h3>Option type</h3>
     <pre><code style="font-height:50%" class="hljs rust" data-trim contenteditable>
 enum Option&lt;T&gt; {
     None,
