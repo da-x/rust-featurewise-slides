@@ -133,7 +133,7 @@ std::vector&lt;int&gt; v = {2, 3, 3};
 v = std::move(v); // undefined behavior
 </code></pre></div>
     <ul>
-	<li class="fragment">In explicit move, the moved-from object is accessible by default.</li>
+	<li class="fragment">In explicit move, the moved-from object remains accessible.</li>
 	<li class="fragment">"Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from"</li>
 	<li class="fragment">Behavior depends on the type of object.</li>
     </ul>
@@ -476,7 +476,7 @@ fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
     // Swap between the points in the Box and on the Stack
     std::mem::swap(&mut p, pbox);
 
-    // The point in pbox was 'reseated' by 'p' and now it is dropped.
+    // The Point in pbox was 'reseated' by 'p' and now it is dropped.
 }
     </code></pre></div>
     <ul>
@@ -516,7 +516,7 @@ fn main() {
     <h3>Rust: Move into closures</h3>
     <ul>
 	<li>
-	    'move' keyword forces 'move capture' rather than 'reference capture'
+	    'move' keyword forces 'move capture' rather than 'reference/move capture'
 	</li>
     </ul>
     <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
