@@ -53,7 +53,7 @@
 	    Possible if a function receives <code class="hljs-i">&&</code> reference.
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+    <div class="fragment"><pre><code style="font-size:100%; line-height: 120%" class="hljs c++" data-trim contenteditable>
 vector&lt;std::string&gt; v;
 v.push_back(std::string("moved")); // Move happens
     </code></pre></div>
@@ -68,7 +68,7 @@ v.push_back(std::string("moved")); // Move happens
 	    Move can be specified explicility using <code class="hljs-i">std::move</code>.
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+    <div class="fragment"><pre><code style="font-size:100%; line-height: 120%" class="hljs c++" data-trim contenteditable>
 vector&lt;std::string&gt; v;
 std::string obj("moved");
 v.push_back(obj); // Copy happens
@@ -77,7 +77,7 @@ v.push_back(std::move(obj)); // Move happens
 </section>
 <section>
     <h3>C++: Change defaults to move</h3>
-    <div><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+    <div><pre><code style="font-size:80%; line-height: 120%" class="hljs c++" data-trim contenteditable>
 Class Example {
 private:
    // Prevent copying
@@ -97,7 +97,7 @@ public:
 </section>
 <section>
     <h3>Move in C++, RVO</h3>
-    <div><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+    <div><pre><code style="font-size:80%; line-height: 120%" class="hljs c++" data-trim contenteditable>
 std::vector&lt;int&gt make_big_vector()
 {
     std::vector&lt;int&gt result;
@@ -171,7 +171,7 @@ v = std::move(v); // undefined behavior
 </section>
 <section>
     Example for move in 'inline construction'
-    <div><pre><code style="font-size:85%; line-height: 95%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:85%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 struct Point {
     x: u32,
     y: u32,
@@ -193,7 +193,7 @@ fn inner(p: Point)
 </section>
 <section>
     Example for a 'constructor pattern'
-    <div><pre><code style="font-size:85%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 impl Point {
     fn new(x: u32, y: u32, name: String) -> Point {
 	// Three moves of `x`, `y`, and `name` from
@@ -218,7 +218,7 @@ Point::with_offset(2, 1)
 </section>
 <section>
     Moving into function parameters down the stack
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:100%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn main() {
     inner(Point { x: 4, y: 3, name: "in main".to_owned() });
 }
@@ -236,7 +236,7 @@ fn receiver(Point a) {
 </section>
 <section>
     Moving back from return value
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:90%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn main() {
     inner(Point { x: 4, y: 3, name: "in main".to_owned() });
 }
@@ -341,7 +341,7 @@ impl Drop for Point {
 	    If the type implements <code class="hljs-i">Copy</code>, then <code class="hljs-i">b</code> will be accsssible, just like in C. Valid for PODs, and user types that derive <code class="hljs-i">Copy</code>:
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div class="fragment"><pre><code style="font-size:99%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 #[derive(Copy)]
 struct Point {
     x: u32,
@@ -353,7 +353,7 @@ struct Point {
 	    Types that cannot be <code class="hljs-i">Copy</code> can derive <code class="hljs-i">Clone</code> instead:
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div class="fragment"><pre><code style="font-size:99%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 #[derive(Clone)]
 struct Point {
     x: u32,
@@ -368,7 +368,7 @@ struct Point {
 	    Auto-deriving example equivalent to the following:
 	</li>
     </ul>
-    <div><pre><code style="font-size:99%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:99%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 // Auto-derived code:
 
 impl Clone for Point {
@@ -389,7 +389,7 @@ impl Clone for Point {
 </section>
 <section>
     <h3>Rust: Move in deconstruction</h3>
-    <div><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:75%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn inner_a(Point a) {
     let Point { x , y, name } = a;
     // Both 'x', 'y', and 'name' are moved out of 'a', we
@@ -424,7 +424,7 @@ fn inner_b(Point a) {
 </section>
 <section>
     <h3>Rust: Method self move</h3>
-    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:60%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 impl Point {
     fn scale(self, factor: u32) -> Point {
 	Point {
@@ -461,7 +461,7 @@ fn inner(Point a) {
 	    Values are initialized on the stack moved into it.
 	</li>
     </ul>
-    <div class="fragment"><pre><code style="font-size:80%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div class="fragment"><pre><code style="font-size:80%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn simple(p: Point, pbox: Box&lt;Point&gt;) {
     // Move p to the heap
     let p_on_heap = Box::new(p);
@@ -492,7 +492,7 @@ fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
 	    Closures automatically capture referred scoped variables
 	</li>
     </ul>
-    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn main() {
     let point = Point { x: 2, y: 4, name: "x".to_owned()};
     let point2 = point.clone();
@@ -519,7 +519,7 @@ fn main() {
 	    'move' keyword forces 'move capture' rather than 'reference/move capture'
 	</li>
     </ul>
-    <div><pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size: 70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn main() {
     let point = Point { x: 2, y: 4, name: "x".to_owned()};
     let point2 = point.clone();

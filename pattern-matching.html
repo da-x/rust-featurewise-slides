@@ -14,77 +14,8 @@
 </section>
 <section>
     <h2>Pattern Matching</h2>
-</section>
-<section>
-    <h3>Struct Deconstruction</h3>
     <ul>
-	<li class="fragment">
-	    First, let's look at Struct Deconstruction
-	</li>
-	<li class="fragment">If a function returns a tuple, Python lets you do:
-	    <pre><code class="hljs python" data-trim contenteditable>
-(a, b) = func()
-	    </code></pre>
-	</li>
-	<li class="fragment">Instead of:
-	    <pre><code class="hljs python" data-trim contenteditable>
-value = func()
-a = value[0]
-b = value[1]
-
-	    </code></pre>
-	</li>
-    </ul>
-</section>
-<section>
-    <ul>
-	<li class="fragment">Now in Rust, suppose we have this struct:
-	    <pre><code class="hljs rust" data-trim contenteditable>
-struct Example {
-    age: u32,
-    name: String,
-}
-	</code></pre></li>
-	<li class="fragment">We can deconstruct it, assigning the names locally:
-	    <pre><code class="hljs rust" data-trim contenteditable>
-let Example { age, name } = func();
-println!("{}", age);
-	</code></pre></li>
-    </ul>
-</section>
-<section>
-    <ul>
-	<li>We don't have to use the same names:
-	    <pre><code class="hljs rust" data-trim contenteditable>
-let Example { age: boo, name } = func();
-println!("{}", boo);
-	</code></pre></li>
-	<li class="fragment">Or get all of them:
-	    <pre><code class="hljs rust" data-trim contenteditable>
-let Example { .., name } = func();
-println!("{}", name);
-	</code></pre></li>
-    </ul>
-</section>
-<section>
-    <ul>
-        <li>Combine deconstruction with equality to literals:</li>
-    </ul>
-    <pre><code class="hljs rust" data-trim contenteditable>
-match test() {
-    Example { age: 3, name } =>
-	println!("Int was three, string was {}",
-		 name),
-    Example { .., name } =>
-	println!("Int was anything else, string was {}",
-		 name),
-}
-    </code></pre>
-    <span class="fragment">Like an advanced form of C's 'switch', right?</span>
-</section>
-<section>
-    <h2>Pattern Matching</h2>
-    <ul>
+	<li class="fragment">Used for deconstruction of values</b></li>
 	<li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
 	<li class="fragment">Tagged unions == variant types == sum types</li>
     </ul>
@@ -141,7 +72,7 @@ using code = std::variant&lt;empty, err_with_val, err_with_str&gt;;
     </code></pre>
 </section>
 <section>
-    <h3>Rust: Same tagged union access</h3>
+    <h3>Rust: Definition and basic matching</h3>
     <pre><code class="hljs rust" data-trim contenteditable>
 enum Code {
     Ok,
