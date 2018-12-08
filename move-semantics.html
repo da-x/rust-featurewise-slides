@@ -19,16 +19,16 @@
     <h3>Move in C</h3>
     <ul>
 	<li class="fragment">
-	    In C, a moving is basically just a <code class="hljs-i">memcpy</code> call
+	    In C, a moving is basically just a <code class="hljs-i">memcpy</code> call.
 	</li>
 	<li class="fragment">
-	    Program invariants determine if references to the copied-from location are still valid
+	    Program invariants determine if references to the copied-from location are still valid.
 	</li>
 	<li class="fragment">
-	    That is, if we intended to move or just copy
+	    That is, if we intended to move or just copy.
 	</li>
 	<li class="fragment">
-	    Hardly any assitance from the compiler regarding to the validity of pointers
+	    Hardly any assitance from the compiler regarding to the validity of pointers.
 	</li>
     </ul>
 </section>
@@ -36,34 +36,106 @@
     <h3>Move in C++</h3>
     <ul>
 	<li class="fragment">
-	    In C++, eventually it was realized that there are too many object constructions, copies, destructions.
+	    Happens if an object is an 'rvalue', <b>and</b> -
 	</li>
 	<li class="fragment">
-	    And they are right, it's bad.
+	    Special move special member functions are implemented in class.
 	</li>
 	<li class="fragment">
-	    By moving the innards of a class to a new memory location, we don't do unnecessary work.
-	</li>
-	<li class="fragment">
-	    So to rectify, there is a special C++ move constructor, since C++11.
+	    Reminder: 'rvalue' is an unnamed value in intermediary expressions valuation.
 	</li>
     </ul>
 </section>
 <section>
-    <h3>Move in C++ (cont')</h3>
+    <h3>C++ move in parameter passing</h3>
     <ul>
 	<li class="fragment">
-	    Due to backward compatibility, move is not done by default for all values.
+	    Possible if a function receives <code class="hljs-i">&&</code> reference.
+	</li>
+    </ul>
+    <div class="fragment"><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+vector&lt;std::string&gt; v;
+v.push_back(std::string("moved")); // Move happens
+    </code></pre></div>
+</section>
+<section>
+    <h3>C++ explicit move</h3>
+    <ul>
+	<li class="fragment">
+	    For lvalues, copying is still default, but can be disabled in class definition.
 	</li>
 	<li class="fragment">
-	    Instead, it is governed by newly introduced 'move reference' (<code class="hljs-i">&&</code>), and <code class="hljs-i">std::move</code>.
+	    Move can be specified explicility using <code class="hljs-i">std::move</code>.
+	</li>
+    </ul>
+    <div class="fragment"><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+vector&lt;std::string&gt; v;
+std::string obj("moved");
+v.push_back(obj); // Copy happens
+v.push_back(std::move(obj)); // Move happens
+    </code></pre></div>
+</section>
+<section>
+    <h3>C++: Change defaults to move</h3>
+    <div><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+Class Example {
+private:
+   // Prevent copying
+
+   Example(const Example&);
+   Example& operator=(const Example&);
+
+public:
+   // Enable moving via default implementation.
+   // If all members also properly implement move
+   // semantics we are good.
+
+   Example(Example &&x) = default;
+   Example& operator=(Example &&a) = default;
+}
+    </code></pre></div>
+</section>
+<section>
+    <h3>Move in C++, RVO</h3>
+    <div><pre><code style="font-size:100%; line-height: 99%" class="hljs c++" data-trim contenteditable>
+std::vector&lt;int&gt make_big_vector()
+{
+    std::vector&lt;int&gt result;
+
+    for (int i = 0; i < 100; i++) {
+        result.push(i);
+    }
+
+    return result;
+}
+
+int main() {
+    // Vector is not copied, but constructed
+    // at the returned location.
+    auto v = make_big_vector();
+}
+    </code></pre></div>
+</section>
+<section>
+    <h3>Move in C++ is confusing</h3>
+    <ul>
+	<li class="fragment">
+	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>): "Write std::move() only when you need to explicitly move an object to another scope".
 	</li>
 	<li class="fragment">
-	    Also, special kind of constructor and assignment operator were added for it.
+	    When not defining move special member functions, compilers generate these functions only if all fields are either PODs or having move special member functions on their own. This can have unexpected result when adding fields to classes.
 	</li>
-	<li class="fragment">
-	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>).
-	</li>
+    </ul>
+</section>
+<section>
+    <pre><code class="hljs c++" data-trim contenteditable>
+std::vector&lt;int&gt; v = {2, 3, 3};
+v = std::move(v); // undefined behavior
+</code></pre></div>
+    <ul>
+	<li class="fragment">In explicit move, the moved-from object is accessible by default.</li>
+	<li class="fragment">"Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from"</li>
+	<li class="fragment">Behavior depends on the type of object.</li>
     </ul>
 </section>
 <section>
@@ -76,24 +148,11 @@
 	    No need to think hard ; This happens everywhere - in assignments, local variable declarations,  parameters passing, deconstruction (related the topic of pattern matching), and closure capture.
 	</li>
 	<li class="fragment">
-	    If a variable is movable, it was guaranteed in compile time that there are no extra references to it during the move in run-time.
+	    If a variable is movable, it was guaranteed in compile time that there are no extra references.
 	</li>
 	<li class="fragment">
 	    Moving is <b>safe</b>. We cannot use a moved value in its original location.
 	</li>
-    </ul>
-</section>
-<section>
-    <div>In C++ for contrast, beside usage, there are dangers:
-	<pre><code class="hljs c++" data-trim contenteditable>
-std::vector&lt;int&gt; v = {2, 3, 3};
-v = std::move(v); // undefined behavior
-    </code></pre></div>
-    <ul>
-	<li class="fragment">Feels like using 'move' is for the real experts.</li>
-	<li class="fragment">Otherwise you risk segfaults.</li>
-	<li class="fragment">"Unless otherwise specified, all standard library objects that have been moved from are placed in a valid but unspecified state. That is, only the functions without preconditions, such as the assignment operator, can be safely used on the object after it was moved from"</li>
-	<li class="fragment">Behavior depends on the type of object.</li>
     </ul>
 </section>
 <section>
@@ -133,28 +192,8 @@ fn inner(p: Point)
 	</code></pre></div>
 </section>
 <section>
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
-struct Point {
-    x: u32,
-    y: u32,
-    name: String, // Owned string
-}
-
-fn main() {
-    // The instance of Point below is moved
-    // into the function `inner`.
-    inner(Point { x: 4, y: 3, name: "X".to_owned() });
-}
-
-fn inner(p: Point)
-{
-    /* whatever code here */
-}
-	</code></pre></div>
-</section>
-<section>
     Example for a 'constructor pattern'
-    <div><pre><code style="font-size:100%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:85%; line-height: 100%" class="hljs rust" data-trim contenteditable>
 impl Point {
     fn new(x: u32, y: u32, name: String) -> Point {
 	// Three moves of `x`, `y`, and `name` from
@@ -170,6 +209,11 @@ impl Point {
 	   name: "I have an offset".to_owned()}
     }
 }
+
+// Example invocations:
+
+Point::new(2, 1, String::from("Hello"))
+Point::with_offset(2, 1)
 	</code></pre></div>
 </section>
 <section>
@@ -337,6 +381,11 @@ impl Clone for Point {
     }
 }
 	</code></pre></div>
+    <ul>
+	<li>
+	    Auto-deriving is explicit, rather than the complex rules of default C++ special member functions.
+	</li>
+    </ul>
 </section>
 <section>
     <h3>Rust: Move in deconstruction</h3>
@@ -389,11 +438,9 @@ impl Point {
         let Point { y, name, .. } = self;
 
 	// Just moves here, no String alloc/dealloc/clone happened :)
-
 	Point {
 	    x: new_x,
-	    y,
-	    name,
+	    y, name,
 	}
     }
 }
