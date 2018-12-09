@@ -407,7 +407,7 @@ fn inner_b(a: Point) {
     let Point { y: y_another_name , .. } = a;
     // 'y' is moved out of 'a', 'x' and 'name are dropped
     println!("y is {}", y_another_name);
-    // 'y_another_name' is dropepd later
+    // 'y_another_name' is dropped later
 }
 	</code></pre></div>
 </section>
@@ -489,29 +489,30 @@ fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
     <h3>Elaborate example with blocks</h3>
     <ul>
 	<li>
-	    Blocks can return moved values similarly to functions:
+	    Blocks can return moved values like functions:
 	</li>
     </ul>
-    <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
+    <div><pre><code style="font-size:65%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 fn example(a: Point) {
-    let v = if {
+    let v = if a.x <= 1 {
         Point { x: 2, y: 3, name: "x".to_owned() }
+	// 'a' is dropped
     } else {
 	if a.x >= 3 {
 	    // Early return from the function
 	    return;
 	}
 
-	// Move `a` to `p` and make it mutable
+	// Move 'a' to 'p' and make it mutable
         let mut p = a;
 	p.name = "replace".to_owned();
 	// (Previous `a.name` value is dropped)
 
-	// Move p to v;
+	// Move 'p' to 'v';
 	p
     };
 
-    /// v is of type Point
+    // v is of type Point
 }
     </code></pre></div>
 </section>
@@ -519,7 +520,7 @@ fn example(a: Point) {
     <h3>Move into closures</h3>
     <ul>
 	<li>
-	    Closures automatically capture referred scoped variables:
+	    Closures automatically capture referred variables:
 	</li>
     </ul>
     <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
@@ -546,7 +547,7 @@ fn main() {
     <h3>Move into closures with keyword</h3>
     <ul>
 	<li>
-	    <code class="hljs-i">move</code> keyword forces 'move capture' rather than 'reference/move capture'
+	    The <code class="hljs-i">move</code> keyword forces 'move capture' rather than 'reference/move capture'
 	</li>
     </ul>
     <div><pre><code style="font-size: 70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
