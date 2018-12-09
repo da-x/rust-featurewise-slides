@@ -202,13 +202,13 @@ fn example_with_borrow(cs: &Shape) {
 <section>
     <h3>Matching pattern joining</h3>
     <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
-fn example_with_borrow(cs: &Shape, minimum_area: u32) {
+fn example_with_borrow_and_if(cs: &Shape, minimum_area: u32) {
     match cs {
 	Shape::Rect(1, _) | Shape::Rect(_, 1) =>
 	   println!("Rect with 1 as some dimension"),
 	Shape::Rect(a, b) if a * b >= minimum_area =>
 	   // 'if' pattern guard ^^^^^^^^^^^^^^^^^
-	   println!("All other boxes"),
+	   println!("Almost all other boxes"),
 	Shape::Cube(width, _, 10) =>
 	   println!("Only certain Cube's width {}", width),
 	_ => println!("all other possibilities"),
