@@ -145,10 +145,10 @@ v = std::move(v); // undefined behavior
 	    All values are movable by default, as long as the compiler determines they are <i>owned</i> in the executing context.
 	</li>
 	<li class="fragment">
-	    No need to think hard ; This happens everywhere - in assignments, local variable declarations,  parameters passing, deconstruction (related the topic of pattern matching), and closure capture.
+	    Owned means movable, means there are no reference to it.
 	</li>
 	<li class="fragment">
-	    If a variable is movable, it was guaranteed in compile time that there are no extra references.
+	    No need to think hard ; This happens everywhere - in assignments, local variable declarations, parameters passing, deconstruction (related the topic of pattern matching), and closure capture.
 	</li>
 	<li class="fragment">
 	    Moving is <b>safe</b>. We cannot use a moved value in its original location.
