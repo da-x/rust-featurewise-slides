@@ -17,7 +17,6 @@
     <ul>
 	<li class="fragment">Used for deconstruction of values</b></li>
 	<li class="fragment">Especially useful for accessing tagged unions <b>safely</b></li>
-	<li class="fragment">Tagged unions == variant types == sum types</li>
     </ul>
 </section>
 <section>
@@ -48,6 +47,7 @@ void example(struct code_struct cs) {
 	    break;
 	case CODE__ERR_WITH_VAL:
 	    printf("%d\n", cs.u.val);
+	    // If we access cs.u.str, possible segfault.
 	    break;
 	case CODE__ERR_WITH_STR:
 	    printf("%s\n", cs.u.str);
@@ -72,7 +72,39 @@ using code = std::variant&lt;empty, err_with_val, err_with_str&gt;;
     </code></pre>
 </section>
 <section>
-    <h3>Rust: Definition and basic matching</h3>
+    <h3>C++: Structured binding declaration (C++17)</h3>
+    <pre><code class="hljs c++" data-trim contenteditable>
+int a[2] = {1, 2}; // (Or: a structure with two fields)
+
+auto [x,y] = a; // creates e[2], copies a into e,
+                // then x refers to e[0], y refers to e[1]
+auto& [xr, yr] = a; // xr refers to a[0], yr refers to a[1]
+    </code></pre>
+</section>
+<section>
+    <h3>C++: mpark's patterns library (C++14) </h3>
+    <ul>
+	<li>See: <a href="http://github.com/mpark/patterns">github.com/mpark/patterns</a></li>
+    </ul>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs c++" data-trim contenteditable>
+#include &lt;cstdio&gt;
+#include &lt;mpark/patterns.hpp&gt;
+
+void fizzbuzz() {
+    using namespace mpark::patterns;
+    for (int i = 1; i <= 100; ++i) {
+        match (i % 3, i % 5) (
+            pattern(0, 0) = [] { std::printf("fizzbuzz\n"); },
+            pattern(0, _) = [] { std::printf("fizz\n"); },
+            pattern(_, 0) = [] { std::printf("buzz\n"); },
+            pattern(_, _) = [i] { std::printf("%d\n", i); },
+	);
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Rust: Enum definition and matching</h3>
     <pre><code class="hljs rust" data-trim contenteditable>
 enum Code {
     Ok,
@@ -80,7 +112,7 @@ enum Code {
     ErrStr(String),
 }
 
-fn example(Code cs) {
+fn example(cs: Code) {
     match cs {
 	Code::Ok => println!("OK"),
 	Code::ErrVal(val) => println!("errno: {}", val),
@@ -90,12 +122,12 @@ fn example(Code cs) {
     </code></pre>
     <ul>
 	<li class="fragment">
-    If 'match' not exhausive we get a compilation error.
+    If 'match' is not exhausive we get a compilation error.
 	</li>
     </ul>
 </section>
 <section>
-    <h3>Rust: Enum value construction</h3>
+    <h3>Enum value construction</h3>
     <pre><code class="hljs rust" data-trim contenteditable>
 		    Code::Ok
     </code></pre>
@@ -107,24 +139,16 @@ fn example(Code cs) {
     <pre><code class="hljs rust" data-trim contenteditable>
 		    Code::ErrString(String::new("A"))
     </code></pre>
-
-    <ul>
-	<li class="fragment">
-	NOTE: The content of this `String` type is heap-allocated
-	for simplicity of the example, but we could have used a reference string
-	type with usage-dependent memory location.
-	</li>
-    </ul>
 </section>
 <section>
     <h3>Elaborate Matching in Deconstruction</h3>
-    <pre><code style="font-size:70%; line-height: 100%" class="hljs rust" data-trim contenteditable>
+    <pre><code style="font-size:70%; line-height: 119%" class="hljs rust" data-trim contenteditable>
 enum Shape {
     Rect(u32, u32),
     Cube(u32, u32, u32),
 }
 
-fn example(Shape cs) {
+fn example(cs: Shape) {
     match cs {
 	Shape::Rect(1, _) =>
 	   println!("Rect with 1 as first dimension"),
@@ -135,6 +159,103 @@ fn example(Shape cs) {
 	Shape::Cube(width, _, 10) =>
 	   println!("Only certain Cube's width {}", width),
 	_ => println!("all other possibilities"),
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Matching without deconstruction</h3>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn example_with_borrow(cs: &Shape) {
+    // Only this changed - ^ cs is borrowed, not owned
+    match cs {
+	Shape::Rect(1, _) =>
+	   println!("Rect with 1 as first dimension"),
+	Shape::Rect(_, 1) =>
+	   println!("Rect with 1 as second dimension"),
+	Shape::Rect(_, _) =>
+	   println!("All other boxes"),
+	Shape::Cube(width, _, 10) =>
+	   println!("Only certain Cube's width {}", width),
+	_ => println!("all other possibilities"),
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Matching pattern joining</h3>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn example_with_borrow(cs: &Shape) {
+    match cs {
+	Shape::Rect(1, _) | Shape::Rect(_, 1) =>
+	   // Here we see ^ - OR is supported in matching
+	   println!("Rect with 1 as some dimension"),
+	Shape::Rect(_, _) =>
+	   println!("All other boxes"),
+	Shape::Cube(width, _, 10) =>
+	   println!("Only certain Cube's width {}", width),
+	_ => println!("all other possibilities"),
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Matching pattern joining</h3>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn example_with_borrow(cs: &Shape, minimum_area: u32) {
+    match cs {
+	Shape::Rect(1, _) | Shape::Rect(_, 1) =>
+	   println!("Rect with 1 as some dimension"),
+	Shape::Rect(a, b) if a * b >= minimum_area =>
+	   // 'if' pattern guard ^^^^^^^^^^^^^^^^^
+	   println!("All other boxes"),
+	Shape::Cube(width, _, 10) =>
+	   println!("Only certain Cube's width {}", width),
+	_ => println!("all other possibilities"),
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Matching with mutable references</h3>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn rect_double_in_place(cs: &mut Shape) {
+    match cs {
+	Shape::Rect(w, h) => {
+	   // 'w' and 'h' have type: &mut u32
+	   *w *= 2;
+	   *h *= 2;
+	}
+	_ => {} // Don't touch anything else
+    }
+}
+    </code></pre>
+</section>
+<section>
+    <h3>Pattern matching in 'if'</h3>
+    <pre><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn example(cs: &mut Shape) {
+    if let Shape::Rect(w, h) = cs {
+        // Something
+    } else {
+        // Something else
+    }
+}
+    </code></pre>
+    <ul>
+	<li class="fragment">
+    Equivalent to:
+	</li>
+    </ul>
+    <pre class="fragment"><code style="font-size:90%; line-height: 119%" class="hljs rust" data-trim contenteditable>
+fn example(cs: &mut Shape) {
+    match cs {
+	Shape::Rect(w, h) = {
+   	    // Something
+        }
+	_ => {
+  	    // Something else
+	}
     }
 }
     </code></pre>
