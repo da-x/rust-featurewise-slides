@@ -22,7 +22,7 @@
 	    In C, a moving is basically just a <code class="hljs-i">memcpy</code> call.
 	</li>
 	<li class="fragment">
-	    Program invariants determine if references to the copied-from location are still valid.
+	    Developer-managed program invariants determine if references to the copied-from location are still valid.
 	</li>
 	<li class="fragment">
 	    That is, if we intended to move or just copy.
@@ -36,13 +36,13 @@
     <h3>Move in C++</h3>
     <ul>
 	<li class="fragment">
-	    Happens if an object is an 'rvalue', <b>and</b> -
+	    Happens if an expression is an 'rvalue', <b>and</b> -
 	</li>
 	<li class="fragment">
 	    Special move special member functions are implemented in class.
 	</li>
 	<li class="fragment">
-	    Reminder: 'rvalue' is an unnamed value in intermediary expressions valuation.
+	    Reminder: 'rvalue' is an unnamed value in intermediary expression valuation.
 	</li>
     </ul>
 </section>
@@ -117,7 +117,7 @@ int main() {
     </code></pre></div>
 </section>
 <section>
-    <h3>Move in C++ is confusing</h3>
+    <h3>Issues with moving in C++</h3>
     <ul>
 	<li class="fragment">
 	    Programmers are not sure when to use <code class="hljs-i">std::move</code> (<a href="http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es56-write-stdmove-only-when-you-need-to-explicitly-move-an-object-to-another-scope">GSL ES.56</a>): "Write std::move() only when you need to explicitly move an object to another scope".
@@ -142,7 +142,7 @@ v = std::move(v); // undefined behavior
     <h3>Rust: Move semantics by default</h3>
     <ul>
 	<li class="fragment">
-	    All types are movable by default, as long as the borrow check determines they are <i>owned</i> in the executing context.
+	    All values are movable by default, as long as the compiler determines they are <i>owned</i> in the executing context.
 	</li>
 	<li class="fragment">
 	    No need to think hard ; This happens everywhere - in assignments, local variable declarations,  parameters passing, deconstruction (related the topic of pattern matching), and closure capture.
@@ -156,7 +156,7 @@ v = std::move(v); // undefined behavior
     </ul>
 </section>
 <section>
-    <h3>Rust: Move used for construction</h3>
+    <h3>Move used for construction</h3>
     <ul>
 	<li class="fragment">
 	    Also, what we usually have as a constructor is just a regular function to wrap native Struct instantiation.
@@ -223,13 +223,13 @@ fn main() {
     inner(Point { x: 4, y: 3, name: "in main".to_owned() });
 }
 
-fn inner(Point a) {
+fn inner(a: Point) {
     // 'a' is moved from being an incoming parameter
     // of 'inner' to being a parameter of 'receiver'
     receiver(a)
 }
 
-fn receiver(Point a) {
+fn receiver(a: Point) {
     // 'a' is dropped here
 }
 	</code></pre></div>
@@ -241,7 +241,7 @@ fn main() {
     inner(Point { x: 4, y: 3, name: "in main".to_owned() });
 }
 
-fn inner(Point a) -> Point {
+fn inner(a: Point) -> Point {
     // 'a' is moved from being an incoming parameter
     // of 'inner' to being a parameter of 'echo'
     echo(a)
@@ -249,14 +249,14 @@ fn inner(Point a) -> Point {
     // value of 'inner'
 }
 
-fn echo(Point a) -> Point {
+fn echo(a: Point) -> Point {
     // 'a' is moved back to the return value
     a
 }
 	</code></pre></div>
 </section>
 <section>
-    <h3>Rust: Destruction is simpler</h3>
+    <h3>Destruction is simpler</h3>
     <ul>
 	<li class="fragment">
 	    For destructors of 'moved-from' memory locations, Rust does not rely on optimizations that cancel them out, unlike in C++. They simply don't exist.
@@ -283,7 +283,7 @@ impl Drop for Point {
 	</code></pre></div>
 </section>
 <section>
-    <h3>Rust: The 'move from lvalue' treatment</h3>
+    <h3>The 'move from lvalue' treatment</h3>
     <div><pre><code class="hljs rust" data-trim contenteditable>
 			a = b;
     </code></pre></div>
@@ -319,7 +319,7 @@ impl Drop for Point {
     </ul>
 </section>
 <section>
-    <h3>Rust: Copy and Clone</h3>
+    <h3>Copy and Clone</h3>
     <ul>
 	<li class="fragment">
 	    <code class="hljs-i">Copy</code> is an automatic trait for some types, such as borrowed read-only references, or PODs, but can be activated for some user types as well.
@@ -383,27 +383,27 @@ impl Clone for Point {
 	</code></pre></div>
     <ul>
 	<li>
-	    Auto-deriving is explicit, rather than the complex rules of default C++ special member functions.
+	    Auto-deriving is explicit, rather than the complex rules responsible for default C++ special member functions implementation.
 	</li>
     </ul>
 </section>
 <section>
-    <h3>Rust: Move in deconstruction</h3>
+    <h3>Move in deconstruction</h3>
     <div><pre><code style="font-size:75%; line-height: 120%" class="hljs rust" data-trim contenteditable>
-fn inner_a(Point a) {
+fn inner_a(a: Point) {
     let Point { x , y, name } = a;
     // Both 'x', 'y', and 'name' are moved out of 'a', we
     // cannot access `a` any more.
 }
 
-fn inner_a(Point a) {
+fn inner_a(a: Point) {
     let Point { x , .. } = a;
     // 'x' is moved out of 'a', 'y' and 'name' are dropped
     println!("x is {}", x);
     // 'x' is dropped later
 }
 
-fn inner_b(Point a) {
+fn inner_b(a: Point) {
     let Point { y: y_another_name , .. } = a;
     // 'y' is moved out of 'a', 'x' and 'name are dropped
     println!("y is {}", y_another_name);
@@ -412,7 +412,7 @@ fn inner_b(Point a) {
 	</code></pre></div>
 </section>
 <section>
-    <h3>Rust: Method self move</h3>
+    <h3>Method self move</h3>
     <ul>
 	<li class="fragment">
 	    Unlike in C++, where <code class="hljs-i">this</code> is always a pointer to the current class instance, in Rust it can be the variable itself.
@@ -423,7 +423,7 @@ fn inner_b(Point a) {
     </ul>
 </section>
 <section>
-    <h3>Rust: Method self move</h3>
+    <h3>Method self move</h3>
     <div><pre><code style="font-size:60%; line-height: 120%" class="hljs rust" data-trim contenteditable>
 impl Point {
     fn scale(self, factor: u32) -> Point {
@@ -445,14 +445,14 @@ impl Point {
     }
 }
 
-fn inner(Point a) {
+fn inner(a: Point) {
     let new_a = a.scale(2).mod(1);
     // 'a' is not accessible here
 }
 	</code></pre></div>
 </section>
 <section>
-    <h3>Rust: Move to and from the heap</h3>
+    <h3>Move to and from the heap</h3>
     <ul>
 	<li class="fragment">
 	    The basic <code class="hljs-i">unique_ptr</code> equivalent is named <code class="hljs-i">Box</code>.
@@ -481,15 +481,45 @@ fn hoopla(mut p: Point, pbox: &mut Box&lt;Point&gt;) {
     </code></pre></div>
     <ul>
 	<li class="fragment">
-	    There is also a <code class="hljs-i">shared_ptr</code> equivalent named <code class="hljs-i">Rc</code>, which works similarly.
+	    There is also a <code class="hljs-i">shared_ptr</code> equivalent named <code class="hljs-i">Rc</code>, which works similarly to <code class="hljs-i">make_shared()</code>.
 	</li>
     </ul>
 </section>
 <section>
-    <h3>Rust: Move into closures</h3>
+    <h3>Elaborate example with blocks</h3>
     <ul>
 	<li>
-	    Closures automatically capture referred scoped variables
+	    Blocks can return moved values similarly to functions:
+	</li>
+    </ul>
+    <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
+fn example(a: Point) {
+    let v = if {
+        Point { x: 2, y: 3, name: "x".to_owned() }
+    } else {
+	if a.x >= 3 {
+	    // Early return from the function
+	    return;
+	}
+
+	// Move `a` to `p` and make it mutable
+        let mut p = a;
+	p.name = "replace".to_owned();
+	// (Previous `a.name` value is dropped)
+
+	// Move p to v;
+	p
+    };
+
+    /// v is of type Point
+}
+    </code></pre></div>
+</section>
+<section>
+    <h3>Move into closures</h3>
+    <ul>
+	<li>
+	    Closures automatically capture referred scoped variables:
 	</li>
     </ul>
     <div><pre><code style="font-size:70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
@@ -513,10 +543,10 @@ fn main() {
     </code></pre></div>
 </section>
 <section>
-    <h3>Rust: Move into closures</h3>
+    <h3>Move into closures with keyword</h3>
     <ul>
 	<li>
-	    'move' keyword forces 'move capture' rather than 'reference/move capture'
+	    <code class="hljs-i">move</code> keyword forces 'move capture' rather than 'reference/move capture'
 	</li>
     </ul>
     <div><pre><code style="font-size: 70%; line-height: 120%" class="hljs rust" data-trim contenteditable>
