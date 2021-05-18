@@ -36,13 +36,16 @@
     <h3>Move in C++</h3>
     <ul>
 	<li class="fragment">
-	    Happens if an expression is an 'rvalue', <b>and</b> -
+	    Can happen if an expression is an 'rvalue' (unnamed value in intermediary expression valuation), <b>and</b> -
 	</li>
 	<li class="fragment">
-	    Special move special member functions are implemented in class.
+	    Special move member functions are implemented in class.
 	</li>
 	<li class="fragment">
-	    Reminder: 'rvalue' is an unnamed value in intermediary expression valuation.
+	    Needs explict move operation for moving from 'lvalue'.
+	</li>
+	<li class="fragment">
+	    Full rules are too long to list here.
 	</li>
     </ul>
 </section>
