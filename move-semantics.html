@@ -78,21 +78,20 @@ v.push_back(std::move(obj)); // Move happens
 <section>
     <h3>C++: Change defaults to move</h3>
     <div><pre><code style="font-size:80%; line-height: 120%" class="hljs c++" data-trim contenteditable>
-Class Example {
-private:
+class Example {
+public:
    // Prevent copying
 
-   Example(const Example&);
-   Example& operator=(const Example&);
+   Example(const Example&) = delete;
+   Example& operator=(const Example&) = delete;
 
-public:
    // Enable moving via default implementation.
    // If all members also properly implement move
    // semantics we are good.
 
    Example(Example &&x) = default;
    Example& operator=(Example &&a) = default;
-}
+};
     </code></pre></div>
 </section>
 <section>
