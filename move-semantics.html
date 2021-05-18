@@ -294,7 +294,7 @@ impl Drop for Point {
 	    In C it is equivalent of <code class="hljs-i">memcpy(&a, &b, sizeof(a))</code>.
 	</li>
 	<li class="fragment">
-	    In C++ it means <i>roughly</i>: call a special or implicit copy or move assignment operator of pre-existing value <code class="hljs-i">a</code>, copying resources from <code class="hljs-i">b</code>. Was <code class="hljs-i">b</code> modified in this operation? Depending on <i>which</i> copy assigment operator was called, depending if <code class="hljs-i">b</code> is a move reference.
+	    In C++ it means <i>roughly</i>: call a special or implicit copy, copying resources from <code class="hljs-i">b</code>. For move we have to use `std::move`. Was <code class="hljs-i">b</code> modified in this operation? Depending on <i>which</i> copy assigment operator was called, or if we used `std::move(b)` instead.
 	</li>
     </ul>
 </section>
